@@ -189,7 +189,6 @@ typedef unsigned int swift_uint4  __attribute__((__ext_vector_type__(4)));
 #pragma clang diagnostic ignored "-Watimport-in-framework-header"
 #endif
 @import CoreGraphics;
-@import ObjectiveC;
 @import UIKit;
 #endif
 
@@ -208,36 +207,10 @@ typedef unsigned int swift_uint4  __attribute__((__ext_vector_type__(4)));
 # pragma pop_macro("any")
 #endif
 
-@class NSNumber;
-
-SWIFT_CLASS("_TtC14StorytellerSDK4Mute")
-@interface Mute : NSObject
-/// Shared instance
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) Mute * _Nonnull shared;)
-+ (Mute * _Nonnull)shared SWIFT_WARN_UNUSED_RESULT;
-/// Should notify every second or only when changes?
-/// True will notify every second of the state, false only when it changes
-@property (nonatomic) BOOL alwaysNotify;
-/// Force one notification after setting to true
-@property (nonatomic) BOOL notifyNext;
-/// Notification handler to be triggered when mute status changes
-/// Triggered every second if alwaysNotify=true, otherwise only when it switches state
-@property (nonatomic, copy) void (^ _Nullable notify)(BOOL);
-/// Currently playing? used when returning from the background (if went to background and foreground really quickly)
-@property (nonatomic, readonly) BOOL isPlaying;
-/// Current mute state
-@property (nonatomic, readonly) BOOL isMute;
-/// State of detection - paused when in background
-@property (nonatomic) BOOL isPaused;
-@property (nonatomic) double checkInterval;
-/// private init
-- (nonnull instancetype)init SWIFT_UNAVAILABLE;
-+ (nonnull instancetype)new SWIFT_DEPRECATED_MSG("-init is unavailable");
-@end
-
 
 @class NSCoder;
 @class NSString;
+@class NSNumber;
 @class UIViewPrintFormatter;
 
 /// Note - below iOS 11 - if is the first view in parent’s hierarchy -> view needs to have at least 114pt height will not render correctly
