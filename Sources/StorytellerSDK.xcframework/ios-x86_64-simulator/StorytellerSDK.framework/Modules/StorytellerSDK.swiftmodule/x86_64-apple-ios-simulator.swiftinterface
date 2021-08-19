@@ -1,5 +1,5 @@
 // swift-interface-format-version: 1.0
-// swift-compiler-version: Apple Swift version 5.4.2 effective-4.2 (swiftlang-1205.0.28.2 clang-1205.0.19.57)
+// swift-compiler-version: Apple Swift version 5.3 effective-4.2 (swiftlang-1200.0.29.2 clang-1200.0.30.1)
 // swift-module-flags: -target x86_64-apple-ios11.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 4.2 -enforce-exclusivity=checked -O -module-name StorytellerSDK
 import AVFoundation
 import AVKit
@@ -8,7 +8,6 @@ import AudioToolbox
 import Foundation
 import PINRemoteImage
 import Photos
-import Security
 import StoreKit
 @_exported import StorytellerSDK
 import Swift
@@ -235,24 +234,28 @@ public protocol StorytellerPollThemeType {
   @objc deinit
 }
 public enum ElementAlignment : StorytellerSDK.DefaultValuable {
-  case left, right, center
+  case left
+  case right
+  case center
   public static var defaultValue: StorytellerSDK.ElementAlignment
   public static func == (a: StorytellerSDK.ElementAlignment, b: StorytellerSDK.ElementAlignment) -> Swift.Bool
+  public var hashValue: Swift.Int {
+    get
+  }
   public func hash(into hasher: inout Swift.Hasher)
   public typealias DefaultValue = StorytellerSDK.ElementAlignment
-  public var hashValue: Swift.Int {
-    get
-  }
 }
 public enum ButtonCasing : StorytellerSDK.DefaultValuable {
-  case `default`, lower, upper
+  case `default`
+  case lower
+  case upper
   public static var defaultValue: StorytellerSDK.ButtonCasing
   public static func == (a: StorytellerSDK.ButtonCasing, b: StorytellerSDK.ButtonCasing) -> Swift.Bool
-  public func hash(into hasher: inout Swift.Hasher)
-  public typealias DefaultValue = StorytellerSDK.ButtonCasing
   public var hashValue: Swift.Int {
     get
   }
+  public func hash(into hasher: inout Swift.Hasher)
+  public typealias DefaultValue = StorytellerSDK.ButtonCasing
 }
 extension UIButton {
   public func setTitle(_ title: Swift.String?, for state: UIKit.UIControl.State, casing: StorytellerSDK.ButtonCasing? = .default)
@@ -263,8 +266,8 @@ open class FontProvider : StorytellerSDK.DefaultValuable {
   }
   open func font(weight: UIKit.UIFont.Weight, size: CoreGraphics.CGFloat) -> UIKit.UIFont?
   public init()
-  public typealias DefaultValue = StorytellerSDK.FontProvider
   @objc deinit
+  public typealias DefaultValue = StorytellerSDK.FontProvider
 }
 open class InstructionsIconProvider : StorytellerSDK.DefaultValuable {
   public static var defaultValue: StorytellerSDK.InstructionsIconProvider {
@@ -276,19 +279,19 @@ open class InstructionsIconProvider : StorytellerSDK.DefaultValuable {
   public var swipeIconImage: UIKit.UIImage?
   public var closeButtonImage: UIKit.UIImage?
   public init()
-  public typealias DefaultValue = StorytellerSDK.InstructionsIconProvider
   @objc deinit
+  public typealias DefaultValue = StorytellerSDK.InstructionsIconProvider
 }
 public enum StorytellerRowViewCellType : Swift.String, Swift.Codable, Swift.CaseIterable {
   case Square
   case Round
-  public init?(rawValue: Swift.String)
-  public typealias AllCases = [StorytellerSDK.StorytellerRowViewCellType]
   public typealias RawValue = Swift.String
-  public static var allCases: [StorytellerSDK.StorytellerRowViewCellType] {
+  public init?(rawValue: Swift.String)
+  public var rawValue: Swift.String {
     get
   }
-  public var rawValue: Swift.String {
+  public typealias AllCases = [StorytellerSDK.StorytellerRowViewCellType]
+  public static var allCases: [StorytellerSDK.StorytellerRowViewCellType] {
     get
   }
 }
@@ -296,8 +299,8 @@ public enum StorytellerRowViewStyle : Swift.String {
   case Auto
   case Light
   case Dark
-  public init?(rawValue: Swift.String)
   public typealias RawValue = Swift.String
+  public init?(rawValue: Swift.String)
   public var rawValue: Swift.String {
     get
   }
@@ -310,14 +313,14 @@ public enum StorytellerRowViewError : Swift.Error {
   case fetchingAdsFailed
   case fetchingStoriesFailed
   public static func == (a: StorytellerSDK.StorytellerRowViewError, b: StorytellerSDK.StorytellerRowViewError) -> Swift.Bool
-  public func hash(into hasher: inout Swift.Hasher)
   public var hashValue: Swift.Int {
     get
   }
+  public func hash(into hasher: inout Swift.Hasher)
 }
 @objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers public class StorytellerRowView : UIKit.UIView {
   @objc dynamic public init()
-  @objc override dynamic public func didMoveToSuperview()
+  @objc deinit
   public var delegate: StorytellerSDK.StorytellerRowViewDelegate? {
     get
     set
@@ -346,6 +349,7 @@ public enum StorytellerRowViewError : Swift.Error {
     get
     set
   }
+  @objc override dynamic public func didMoveToSuperview()
   @objc override dynamic public func prepareForInterfaceBuilder()
   @objc override dynamic public func draw(_ rect: CoreGraphics.CGRect, for formatter: UIKit.UIViewPrintFormatter)
   public func openStory(id: Swift.String = "", animated: Swift.Bool = true, onError: ((StorytellerSDK.StorytellerRowViewError) -> ())? = nil)
@@ -353,26 +357,12 @@ public enum StorytellerRowViewError : Swift.Error {
   @available(*, deprecated, message: "the method has been moved. Please use `Storyteller.dismissStoryView`")
   public func dismissStoryView(animated: Swift.Bool, dismissReason: Swift.String? = nil, onComplete: (() -> Swift.Void)? = nil)
   @objc public func reloadData()
-  @objc deinit
-}
-public enum Environment : Swift.String, Swift.CaseIterable, Swift.Codable {
-  case Dev
-  case Staging
-  case Production
-  public init?(rawValue: Swift.String)
-  public typealias AllCases = [StorytellerSDK.Environment]
-  public typealias RawValue = Swift.String
-  public static var allCases: [StorytellerSDK.Environment] {
-    get
-  }
-  public var rawValue: Swift.String {
-    get
-  }
 }
 public typealias VoidCompletion = () -> Swift.Void
 public typealias ErrorCompletion = (Swift.Error) -> Swift.Void
 public typealias ImageCompletion = (UIKit.UIImage?) -> Swift.Void
 public class Storyteller {
+  required public init()
   public static var isInitialized: Swift.Bool {
     get
   }
@@ -380,13 +370,11 @@ public class Storyteller {
     get
   }
   public static var customInstanceHost: Swift.String?
+  public static let sharedInstance: StorytellerSDK.Storyteller
   public static var screenAspectRatio: CoreGraphics.CGFloat {
     get
   }
   public static var isScreenStandardPortrait: Swift.Bool {
-    get
-  }
-  public static var currentEnvironment: StorytellerSDK.Environment? {
     get
   }
   public static var currentUserId: Swift.String? {
@@ -398,14 +386,12 @@ public class Storyteller {
   public static var version: Swift.String? {
     get
   }
-  public static let sharedInstance: StorytellerSDK.Storyteller
   public static func dismissStoryView(animated: Swift.Bool, dismissReason: Swift.String? = nil, onComplete: (() -> Swift.Void)? = nil)
   public static func isStorytellerDeeplink(url: Foundation.URL) -> Swift.Bool
   @discardableResult
   public static func openDeeplink(url: Foundation.URL, delegate: StorytellerSDK.StorytellerRowViewDelegate? = nil, onError: ((Swift.Error) -> Swift.Void)? = nil) -> Swift.Bool
   public func initialize(apiKey: Swift.String, shouldPreloadData: Swift.Bool = true, onComplete: @escaping StorytellerSDK.VoidCompletion = {}, onError: @escaping StorytellerSDK.ErrorCompletion = { _ in })
   public func setUserDetails(userInput: StorytellerSDK.UserInput)
-  required public init()
   @objc deinit
 }
 public struct ClientStory : Swift.Codable {
@@ -413,28 +399,18 @@ public struct ClientStory : Swift.Codable {
   public let pages: [Swift.String]
   public let categories: [StorytellerSDK.Category]
   public init(id: Swift.String, pages: [Swift.String], categories: [StorytellerSDK.Category])
-  public func encode(to encoder: Swift.Encoder) throws
   public init(from decoder: Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
 }
 public enum StorytellerError : Foundation.LocalizedError {
-  case invalidAPIKeyError(Swift.Error), networkError(Swift.Error), networkTimeoutError(Swift.Error), jsonParseError
+  case invalidAPIKeyError(Swift.Error)
+  case networkError(Swift.Error)
+  case networkTimeoutError(Swift.Error)
+  case jsonParseError
   public var cause: Swift.Error? {
     get
   }
   public var errorDescription: Swift.String? {
-    get
-  }
-}
-public enum Instance : Swift.String, Swift.Codable, Swift.CaseIterable {
-  case storyteller
-  case disney
-  public init?(rawValue: Swift.String)
-  public typealias AllCases = [StorytellerSDK.Instance]
-  public typealias RawValue = Swift.String
-  public static var allCases: [StorytellerSDK.Instance] {
-    get
-  }
-  public var rawValue: Swift.String {
     get
   }
 }
@@ -476,30 +452,32 @@ public struct ClientAd : Swift.Codable {
   public var type: Swift.String {
     get
   }
-  public func encode(to encoder: Swift.Encoder) throws
   public init(from decoder: Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
 }
 public struct ClientAdSwipeUp : Swift.Codable {
   public let url: Swift.String
   public let kind: StorytellerSDK.ClientAdSwipeUpKind
   public init(url: Swift.String, kind: StorytellerSDK.ClientAdSwipeUpKind)
-  public func encode(to encoder: Swift.Encoder) throws
   public init(from decoder: Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
 }
 public enum ClientAdSwipeUpKind : Swift.String, Swift.Codable {
-  case web, inApp, store
-  public init?(rawValue: Swift.String)
+  case web
+  case inApp
+  case store
   public typealias RawValue = Swift.String
   public var rawValue: Swift.String {
     get
   }
+  public init?(rawValue: Swift.String)
 }
 public struct ClientTrackingPixel : Swift.Codable {
   public let eventType: Swift.String
   public let url: Swift.String
   public init(eventType: Swift.String = "impression", url: Swift.String)
-  public func encode(to encoder: Swift.Encoder) throws
   public init(from decoder: Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
 }
 public struct UserActivity {
   public enum EventType : Swift.String {
@@ -532,8 +510,8 @@ public struct UserActivity {
     case BufferingStarted
     case BufferingEnded
     case VotedPoll
-    public init?(rawValue: Swift.String)
     public typealias RawValue = Swift.String
+    public init?(rawValue: Swift.String)
     public var rawValue: Swift.String {
       get
     }
@@ -553,15 +531,15 @@ public struct UserActivity {
 public struct Category : Swift.Codable {
   public struct ExternalId : Swift.Codable {
     public init?(json: StorytellerSDK.JSON)
-    public func encode(to encoder: Swift.Encoder) throws
     public init(from decoder: Swift.Decoder) throws
+    public func encode(to encoder: Swift.Encoder) throws
   }
   public var name: Swift.String
   public var urlName: Swift.String
   public var externalIds: [StorytellerSDK.Category.ExternalId]
   public init?(json: StorytellerSDK.JSON)
-  public func encode(to encoder: Swift.Encoder) throws
   public init(from decoder: Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
 }
 extension StorytellerSDK.ElementAlignment : Swift.Equatable {}
 extension StorytellerSDK.ElementAlignment : Swift.Hashable {}
@@ -575,12 +553,6 @@ extension StorytellerSDK.StorytellerRowViewStyle : Swift.Hashable {}
 extension StorytellerSDK.StorytellerRowViewStyle : Swift.RawRepresentable {}
 extension StorytellerSDK.StorytellerRowViewError : Swift.Equatable {}
 extension StorytellerSDK.StorytellerRowViewError : Swift.Hashable {}
-extension StorytellerSDK.Environment : Swift.Equatable {}
-extension StorytellerSDK.Environment : Swift.Hashable {}
-extension StorytellerSDK.Environment : Swift.RawRepresentable {}
-extension StorytellerSDK.Instance : Swift.Equatable {}
-extension StorytellerSDK.Instance : Swift.Hashable {}
-extension StorytellerSDK.Instance : Swift.RawRepresentable {}
 extension StorytellerSDK.ClientAdSwipeUpKind : Swift.Equatable {}
 extension StorytellerSDK.ClientAdSwipeUpKind : Swift.Hashable {}
 extension StorytellerSDK.ClientAdSwipeUpKind : Swift.RawRepresentable {}
