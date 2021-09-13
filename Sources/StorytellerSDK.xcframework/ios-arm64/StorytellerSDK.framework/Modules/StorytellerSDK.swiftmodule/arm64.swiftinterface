@@ -456,9 +456,11 @@ public struct ClientAd : Swift.Codable {
   public func encode(to encoder: Swift.Encoder) throws
 }
 public struct ClientAdSwipeUp : Swift.Codable {
-  public let url: Swift.String
-  public let kind: StorytellerSDK.ClientAdSwipeUpKind
+  public let urlOrStoreId: Swift.String
+  public let type: StorytellerSDK.ClientAdSwipeUpKind
+  @available(*, deprecated, renamed: "init(urlOrStoreId:type:)")
   public init(url: Swift.String, kind: StorytellerSDK.ClientAdSwipeUpKind)
+  public init(urlOrStoreId: Swift.String, type: StorytellerSDK.ClientAdSwipeUpKind)
   public init(from decoder: Swift.Decoder) throws
   public func encode(to encoder: Swift.Encoder) throws
 }
