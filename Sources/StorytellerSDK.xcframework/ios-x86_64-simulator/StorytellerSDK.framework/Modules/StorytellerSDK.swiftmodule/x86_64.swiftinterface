@@ -20,6 +20,7 @@ public protocol StorytellerRowViewDelegate {
   func onUserActivityOccurred(type: StorytellerSDK.UserActivity.EventType, data: StorytellerSDK.UserActivityData)
   func getAdsForRow(stories: [StorytellerSDK.ClientStory], onComplete: @escaping ([StorytellerSDK.ClientAd?]) -> Swift.Void, onError: @escaping (Swift.Error) -> Swift.Void)
   func userSwipedUpToApp(swipeUpUrl: Swift.String)
+  func configureSwipeUpWebView(configuration: inout WebKit.WKWebViewConfiguration)
   func tileBecameVisible(index: Swift.Int)
 }
 extension StorytellerRowViewDelegate {
@@ -31,6 +32,7 @@ extension StorytellerRowViewDelegate {
   public func onStoryDismissed()
   public func onUserActivityOccurred(type: StorytellerSDK.UserActivity.EventType, data: StorytellerSDK.UserActivityData)
   public func userSwipedUpToApp(swipeUpUrl: Swift.String)
+  public func configureSwipeUpWebView(configuration: inout WebKit.WKWebViewConfiguration)
   public func tileBecameVisible(index: Swift.Int)
 }
 public struct UserInput {
