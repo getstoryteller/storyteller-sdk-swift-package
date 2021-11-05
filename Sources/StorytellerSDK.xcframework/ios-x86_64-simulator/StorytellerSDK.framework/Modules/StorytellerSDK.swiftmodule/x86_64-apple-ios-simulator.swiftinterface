@@ -463,7 +463,7 @@ public struct ClientAdSwipeUp : Swift.Codable {
   public let text: Swift.String?
   @available(*, deprecated, renamed: "init(urlOrStoreId:type:)")
   public init(url: Swift.String, kind: StorytellerSDK.ClientAdSwipeUpKind, text: Swift.String? = nil)
-  public init(urlOrStoreId: Swift.String, type: StorytellerSDK.ClientAdSwipeUpKind, text: Swift.String?)
+  public init(urlOrStoreId: Swift.String, type: StorytellerSDK.ClientAdSwipeUpKind, text: Swift.String? = nil)
   public init(from decoder: Swift.Decoder) throws
   public func encode(to encoder: Swift.Encoder) throws
 }
