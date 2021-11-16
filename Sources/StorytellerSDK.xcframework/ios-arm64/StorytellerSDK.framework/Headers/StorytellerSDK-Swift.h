@@ -218,15 +218,12 @@ SWIFT_CLASS("_TtC14StorytellerSDK18StorytellerRowView")
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder SWIFT_UNAVAILABLE;
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @property (nonatomic, copy) IBInspectable NSString * _Nonnull cellType;
-@property (nonatomic) IBInspectable CGFloat cellScale;
 @property (nonatomic) IBInspectable CGFloat cellSpacing;
 @property (nonatomic) IBInspectable CGFloat leftInset;
 @property (nonatomic) IBInspectable CGFloat rightInset;
 - (void)didMoveToSuperview;
 - (void)prepareForInterfaceBuilder;
 - (void)drawRect:(CGRect)rect forViewPrintFormatter:(UIViewPrintFormatter * _Nonnull)formatter;
-/// Start loading fresh data for all stories from the API
-- (void)reloadData;
 @end
 
 

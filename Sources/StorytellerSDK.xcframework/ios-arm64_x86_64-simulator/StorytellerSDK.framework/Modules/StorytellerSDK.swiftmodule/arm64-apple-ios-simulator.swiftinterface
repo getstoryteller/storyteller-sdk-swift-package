@@ -1,0 +1,587 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.3 effective-4.2 (swiftlang-1200.0.29.2 clang-1200.0.30.1)
+// swift-module-flags: -target arm64-apple-ios11.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 4.2 -enforce-exclusivity=checked -O -module-name StorytellerSDK
+import AVFoundation
+import AVKit
+import AsyncDisplayKit
+import AudioToolbox
+import Foundation
+import PINRemoteImage
+import Photos
+import StoreKit
+@_exported import StorytellerSDK
+import Swift
+import UIKit
+import WebKit
+import os
+public protocol StorytellerRowViewDelegate {
+  func onStoriesDataLoadStarted()
+  func onStoriesDataLoadComplete(success: Swift.Bool, error: Swift.Error?, dataCount: Swift.Int)
+  func onStoryDismissed()
+  func tileBecameVisible(index: Swift.Int)
+}
+extension StorytellerRowViewDelegate {
+  public func onStoriesDataLoadStarted()
+  public func onStoriesDataLoadComplete(success: Swift.Bool, error: Swift.Error?, dataCount: Swift.Int)
+  public func onStoryDismissed()
+  public func tileBecameVisible(index: Swift.Int)
+}
+public protocol StorytellerDelegate {
+  func onUserActivityOccurred(type: StorytellerSDK.UserActivity.EventType, data: StorytellerSDK.UserActivityData)
+  func getAdsForRow(stories: [StorytellerSDK.ClientStory], onComplete: @escaping ([StorytellerSDK.ClientAd?]) -> Swift.Void, onError: @escaping (Swift.Error) -> Swift.Void)
+  func configureSwipeUpWebView(configuration: inout WebKit.WKWebViewConfiguration)
+  func userSwipedUpToApp(swipeUpUrl: Swift.String)
+}
+extension StorytellerDelegate {
+  public func getAdsForRow(stories: [StorytellerSDK.ClientStory], onComplete: @escaping ([StorytellerSDK.ClientAd?]) -> Swift.Void, onError: @escaping (Swift.Error) -> Swift.Void)
+}
+extension StorytellerDelegate {
+  public func onUserActivityOccurred(type: StorytellerSDK.UserActivity.EventType, data: StorytellerSDK.UserActivityData)
+  public func configureSwipeUpWebView(configuration: inout WebKit.WKWebViewConfiguration)
+  public func userSwipedUpToApp(swipeUpUrl: Swift.String)
+}
+public enum StorytellerRowViewError : Swift.Error {
+  case pageNotFound
+  case storyNotFound
+  case storyWithPageNotFound
+  case noStoriesFound
+  case fetchingAdsFailed
+  case fetchingStoriesFailed
+  public static func == (a: StorytellerSDK.StorytellerRowViewError, b: StorytellerSDK.StorytellerRowViewError) -> Swift.Bool
+  public var hashValue: Swift.Int {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+}
+public struct UserInput {
+  public var externalId: Swift.String?
+  public init(externalId: Swift.String? = nil)
+}
+extension UserInput : StorytellerSDK.Serializable {
+  public init?(json: StorytellerSDK.JSON)
+  public func serialize() -> StorytellerSDK.JSON?
+}
+extension UserInput : Swift.Equatable {
+  public static func == (lhs: StorytellerSDK.UserInput, rhs: StorytellerSDK.UserInput) -> Swift.Bool
+}
+public typealias JSON = [Swift.String : Any]
+public protocol Serializable {
+  init?(json: StorytellerSDK.JSON)
+  func serialize() -> StorytellerSDK.JSON?
+}
+extension Serializable {
+  public func serialize() -> StorytellerSDK.JSON?
+}
+public protocol StorytellerUiThemeType {
+  var uiStyle: StorytellerSDK.StorytellerRowViewStyle { get set }
+  var lightTheme: StorytellerSDK.StorytellerThemeType { get set }
+  var darkTheme: StorytellerSDK.StorytellerThemeType { get set }
+  var `default`: StorytellerSDK.StorytellerThemeType { get set }
+  func value<T>(for keyPath: Swift.KeyPath<StorytellerSDK.StorytellerThemeType, T?>) -> T where T : StorytellerSDK.DefaultValuable
+}
+public class StorytellerUiTheme : StorytellerSDK.StorytellerUiThemeType {
+  public init()
+  public var uiStyle: StorytellerSDK.StorytellerRowViewStyle
+  public var lightTheme: StorytellerSDK.StorytellerThemeType
+  public var darkTheme: StorytellerSDK.StorytellerThemeType
+  public var `default`: StorytellerSDK.StorytellerThemeType
+  public func value<T>(for keyPath: Swift.KeyPath<StorytellerSDK.StorytellerThemeType, T?>) -> T where T : StorytellerSDK.DefaultValuable
+  @objc deinit
+}
+public protocol DefaultValuable {
+  associatedtype DefaultValue : StorytellerSDK.DefaultValuable
+  static var defaultValue: Self.DefaultValue { get }
+}
+extension UIColor : StorytellerSDK.DefaultValuable {
+  public static var defaultValue: UIKit.UIColor {
+    get
+  }
+  public typealias DefaultValue = UIKit.UIColor
+}
+extension String : StorytellerSDK.DefaultValuable {
+  public static var defaultValue: Swift.String {
+    get
+  }
+  public typealias DefaultValue = Swift.String
+}
+extension CGFloat : StorytellerSDK.DefaultValuable {
+  public static var defaultValue: CoreGraphics.CGFloat {
+    get
+  }
+  public typealias DefaultValue = CoreGraphics.CGFloat
+}
+extension Bool : StorytellerSDK.DefaultValuable {
+  public static var defaultValue: Swift.Bool {
+    get
+  }
+  public typealias DefaultValue = Swift.Bool
+}
+extension NSTextAlignment : StorytellerSDK.DefaultValuable {
+  public static var defaultValue: UIKit.NSTextAlignment {
+    get
+  }
+  public typealias DefaultValue = UIKit.NSTextAlignment
+}
+extension UIImage : StorytellerSDK.DefaultValuable {
+  public static var defaultValue: UIKit.UIImage {
+    get
+  }
+  public typealias DefaultValue = UIKit.UIImage
+}
+public protocol StorytellerThemeType {
+  var main: StorytellerSDK.StorytellerMainThemeType { get set }
+  var row: StorytellerSDK.StorytellerRowThemeType { get set }
+  var player: StorytellerSDK.StorytellerPlayerThemeType { get set }
+  var instructions: StorytellerSDK.StorytellerInstructionsThemeType { get set }
+  var poll: StorytellerSDK.StorytellerPollThemeType { get set }
+}
+public class StorytellerTheme : StorytellerSDK.StorytellerThemeType {
+  public var main: StorytellerSDK.StorytellerMainThemeType
+  public var row: StorytellerSDK.StorytellerRowThemeType
+  public var player: StorytellerSDK.StorytellerPlayerThemeType
+  public var instructions: StorytellerSDK.StorytellerInstructionsThemeType
+  public var poll: StorytellerSDK.StorytellerPollThemeType
+  public static var `default`: StorytellerSDK.StorytellerTheme {
+    get
+  }
+  public init()
+  @objc deinit
+}
+public protocol StorytellerMainThemeType {
+  var primaryColor: UIKit.UIColor? { get set }
+  var secondaryColor: UIKit.UIColor? { get set }
+  var fonts: StorytellerSDK.FontProvider? { get set }
+  var buttonColor: UIKit.UIColor? { get set }
+  var buttonTextColor: UIKit.UIColor? { get set }
+  var buttonRadius: CoreGraphics.CGFloat? { get set }
+  var textColor: UIKit.UIColor? { get set }
+  var reverseTextColor: UIKit.UIColor? { get set }
+  var buttonCasing: StorytellerSDK.ButtonCasing? { get set }
+}
+@_hasMissingDesignatedInitializers final public class StorytellerMainTheme : StorytellerSDK.StorytellerMainThemeType {
+  final public var primaryColor: UIKit.UIColor?
+  final public var secondaryColor: UIKit.UIColor?
+  final public var fonts: StorytellerSDK.FontProvider?
+  final public var buttonColor: UIKit.UIColor?
+  final public var buttonTextColor: UIKit.UIColor?
+  final public var buttonRadius: CoreGraphics.CGFloat?
+  final public var textColor: UIKit.UIColor?
+  final public var reverseTextColor: UIKit.UIColor?
+  final public var buttonCasing: StorytellerSDK.ButtonCasing?
+  public static var defaultValue: StorytellerSDK.StorytellerMainTheme {
+    get
+  }
+  @objc deinit
+}
+public protocol StorytellerRowThemeType {
+  var newIndicatorBackgroundColor: UIKit.UIColor? { get set }
+  var newIndicatorBackgroundSecondaryColor: UIKit.UIColor? { get set }
+  var newIndicatorTextColor: UIKit.UIColor? { get set }
+  var newIndicatorTextSize: CoreGraphics.CGFloat? { get set }
+  var newIndicatorAlignment: StorytellerSDK.ElementAlignment? { get set }
+  var storyTitleAlignment: UIKit.NSTextAlignment? { get set }
+  var titleTextSize: CoreGraphics.CGFloat? { get set }
+  var titleLineHeight: CoreGraphics.CGFloat? { get set }
+  var tilePadding: CoreGraphics.CGFloat? { get set }
+}
+@_hasMissingDesignatedInitializers final public class StorytellerRowTheme : StorytellerSDK.StorytellerRowThemeType {
+  final public var newIndicatorBackgroundColor: UIKit.UIColor?
+  final public var newIndicatorBackgroundSecondaryColor: UIKit.UIColor?
+  final public var newIndicatorTextColor: UIKit.UIColor?
+  final public var newIndicatorTextSize: CoreGraphics.CGFloat?
+  final public var newIndicatorAlignment: StorytellerSDK.ElementAlignment?
+  final public var storyTitleAlignment: UIKit.NSTextAlignment?
+  final public var titleTextSize: CoreGraphics.CGFloat?
+  final public var titleLineHeight: CoreGraphics.CGFloat?
+  final public var tilePadding: CoreGraphics.CGFloat?
+  public static var defaultValue: StorytellerSDK.StorytellerRowTheme {
+    get
+  }
+  @objc deinit
+}
+public protocol StorytellerPlayerThemeType {
+  var showStoryIcon: Swift.Bool? { get set }
+  var showTimestamp: Swift.Bool? { get set }
+}
+@_hasMissingDesignatedInitializers final public class StorytellerPlayerTheme : StorytellerSDK.StorytellerPlayerThemeType {
+  final public var showStoryIcon: Swift.Bool?
+  final public var showTimestamp: Swift.Bool?
+  public static var defaultValue: StorytellerSDK.StorytellerPlayerTheme {
+    get
+  }
+  @objc deinit
+}
+public protocol StorytellerInstructionsThemeType {
+  var startButtonBackgroundColor: UIKit.UIColor? { get set }
+  var startButtonTextColor: UIKit.UIColor? { get set }
+  var iconColor: UIKit.UIColor? { get set }
+  var icons: StorytellerSDK.InstructionsIconProvider? { get set }
+  var textColor: UIKit.UIColor? { get set }
+  var backgroundColor: UIKit.UIColor? { get set }
+}
+@_hasMissingDesignatedInitializers final public class StorytellerInstructionsTheme : StorytellerSDK.StorytellerInstructionsThemeType {
+  final public var startButtonBackgroundColor: UIKit.UIColor?
+  final public var startButtonTextColor: UIKit.UIColor?
+  final public var iconColor: UIKit.UIColor?
+  final public var icons: StorytellerSDK.InstructionsIconProvider?
+  final public var textColor: UIKit.UIColor?
+  final public var backgroundColor: UIKit.UIColor?
+  public static var defaultValue: StorytellerSDK.StorytellerInstructionsTheme {
+    get
+  }
+  @objc deinit
+}
+public protocol StorytellerPollThemeType {
+  var percentageBarColor: UIKit.UIColor? { get set }
+  var selectedAnswerBorderColor: UIKit.UIColor? { get set }
+  var selectedAnswerBorderImage: UIKit.UIImage? { get set }
+  var showVoteCount: Swift.Bool? { get set }
+  var showPercentageBarBackground: Swift.Bool? { get set }
+  var answerTextColor: UIKit.UIColor? { get set }
+  var voteCountTextColor: UIKit.UIColor? { get set }
+}
+@_hasMissingDesignatedInitializers final public class StorytellerPollTheme : StorytellerSDK.StorytellerPollThemeType {
+  final public var percentageBarColor: UIKit.UIColor?
+  final public var selectedAnswerBorderColor: UIKit.UIColor?
+  final public var selectedAnswerBorderImage: UIKit.UIImage?
+  final public var showVoteCount: Swift.Bool?
+  final public var showPercentageBarBackground: Swift.Bool?
+  final public var answerTextColor: UIKit.UIColor?
+  final public var voteCountTextColor: UIKit.UIColor?
+  public static var defaultValue: StorytellerSDK.StorytellerPollTheme {
+    get
+  }
+  @objc deinit
+}
+public enum ElementAlignment : StorytellerSDK.DefaultValuable {
+  case left
+  case right
+  case center
+  public static var defaultValue: StorytellerSDK.ElementAlignment
+  public static func == (a: StorytellerSDK.ElementAlignment, b: StorytellerSDK.ElementAlignment) -> Swift.Bool
+  public var hashValue: Swift.Int {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public typealias DefaultValue = StorytellerSDK.ElementAlignment
+}
+public enum ButtonCasing : StorytellerSDK.DefaultValuable {
+  case `default`
+  case lower
+  case upper
+  public static var defaultValue: StorytellerSDK.ButtonCasing
+  public static func == (a: StorytellerSDK.ButtonCasing, b: StorytellerSDK.ButtonCasing) -> Swift.Bool
+  public var hashValue: Swift.Int {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public typealias DefaultValue = StorytellerSDK.ButtonCasing
+}
+extension UIButton {
+  public func setTitle(_ title: Swift.String?, for state: UIKit.UIControl.State, casing: StorytellerSDK.ButtonCasing? = .default)
+}
+open class FontProvider : StorytellerSDK.DefaultValuable {
+  public static var defaultValue: StorytellerSDK.FontProvider {
+    get
+  }
+  open func font(weight: UIKit.UIFont.Weight, size: CoreGraphics.CGFloat) -> UIKit.UIFont?
+  public init()
+  @objc deinit
+  public typealias DefaultValue = StorytellerSDK.FontProvider
+}
+open class InstructionsIconProvider : StorytellerSDK.DefaultValuable {
+  public static var defaultValue: StorytellerSDK.InstructionsIconProvider {
+    get
+  }
+  public var forwardIconImage: UIKit.UIImage?
+  public var pauseIconImage: UIKit.UIImage?
+  public var backIconImage: UIKit.UIImage?
+  public var swipeIconImage: UIKit.UIImage?
+  public var closeButtonImage: UIKit.UIImage?
+  public init()
+  @objc deinit
+  public typealias DefaultValue = StorytellerSDK.InstructionsIconProvider
+}
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers public class StorytellerRowView : UIKit.UIView {
+  @objc dynamic public init()
+  public var categories: [Swift.String] {
+    get
+    set
+  }
+  public var delegate: StorytellerSDK.StorytellerRowViewDelegate? {
+    get
+    set
+  }
+  @objc @IBInspectable public var cellType: Swift.String {
+    @objc get
+    @objc set
+  }
+  @objc @IBInspectable public var cellSpacing: CoreGraphics.CGFloat {
+    @objc get
+    @objc set
+  }
+  @objc @IBInspectable public var leftInset: CoreGraphics.CGFloat {
+    @objc get
+    @objc set
+  }
+  @objc @IBInspectable public var rightInset: CoreGraphics.CGFloat {
+    @objc get
+    @objc set
+  }
+  public var theme: StorytellerSDK.StorytellerUiThemeType {
+    get
+    set
+  }
+  @objc override dynamic public func didMoveToSuperview()
+  @objc override dynamic public func prepareForInterfaceBuilder()
+  @objc override dynamic public func draw(_ rect: CoreGraphics.CGRect, for formatter: UIKit.UIViewPrintFormatter)
+  public func openStory(id: Swift.String = "", animated: Swift.Bool = true, onError: ((StorytellerSDK.StorytellerRowViewError) -> Swift.Void)? = nil)
+  public func openPage(id: Swift.String = "", animated: Swift.Bool = true, onError: ((StorytellerSDK.StorytellerRowViewError) -> Swift.Void)? = nil)
+  public func openDeeplink(url: Foundation.URL, onError: ((StorytellerSDK.StorytellerRowViewError) -> Swift.Void)? = nil)
+  public func reloadData()
+  @available(*, deprecated, message: "the method has been moved. Please use `Storyteller.dismissStoryView`")
+  public func dismissStoryView(animated: Swift.Bool, dismissReason: Swift.String? = nil, onComplete: (() -> Swift.Void)? = nil)
+  @objc deinit
+}
+public typealias VoidCompletion = () -> Swift.Void
+public typealias ErrorCompletion = (Swift.Error) -> Swift.Void
+public typealias ImageCompletion = (UIKit.UIImage?) -> Swift.Void
+public class Storyteller {
+  required public init()
+  public static var isInitialized: Swift.Bool {
+    get
+  }
+  public static var isPresentingStory: Swift.Bool {
+    get
+  }
+  public static var customInstanceHost: Swift.String?
+  public static let sharedInstance: StorytellerSDK.Storyteller
+  public static var screenAspectRatio: CoreGraphics.CGFloat {
+    get
+  }
+  public static var isScreenStandardPortrait: Swift.Bool {
+    get
+  }
+  public static var currentUserId: Swift.String? {
+    get
+  }
+  public static var currentApiKey: Swift.String? {
+    get
+  }
+  public static var version: Swift.String? {
+    get
+  }
+  public static func dismissStoryView(animated: Swift.Bool, dismissReason: Swift.String? = nil, onComplete: (() -> Swift.Void)? = nil)
+  public static func isStorytellerDeeplink(url: Foundation.URL) -> Swift.Bool
+  @discardableResult
+  public static func openDeeplink(url: Foundation.URL, onError: ((Swift.Error) -> Swift.Void)? = nil) -> Swift.Bool
+  public static func openStory(id: Swift.String, onError: @escaping ((Swift.Error) -> Swift.Void) = { _ in })
+  public static func openPage(id: Swift.String, onError: @escaping ((Swift.Error) -> Swift.Void) = { _ in })
+  public var delegate: StorytellerSDK.StorytellerDelegate? {
+    get
+    set
+  }
+  public func initialize(apiKey: Swift.String, userInput: StorytellerSDK.UserInput? = nil, categoriesToPreload: [Swift.String] = [], onComplete: @escaping StorytellerSDK.VoidCompletion = { }, onError: @escaping StorytellerSDK.ErrorCompletion = { _ in })
+  @objc deinit
+}
+public struct ClientStory : Swift.Codable {
+  public let id: Swift.String
+  public let pages: [Swift.String]
+  public let categories: [StorytellerSDK.Category]
+  public init(id: Swift.String, pages: [Swift.String], categories: [StorytellerSDK.Category])
+  public init(from decoder: Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+}
+public enum StorytellerError : Foundation.LocalizedError {
+  case invalidAPIKeyError(Swift.Error)
+  case networkError(Swift.Error)
+  case networkTimeoutError(Swift.Error)
+  case jsonParseError
+  public var cause: Swift.Error? {
+    get
+  }
+  public var errorDescription: Swift.String? {
+    get
+  }
+}
+public struct UserActivityData {
+  public let openedReason: Swift.String?
+  public let dismissedReason: Swift.String?
+  public let storyId: Swift.String?
+  public let storyIndex: Swift.Int?
+  public let storyTitle: Swift.String?
+  public let storyReadStatus: Swift.String?
+  public let storyPageCount: Swift.Int?
+  public let pageId: Swift.String?
+  public let pageType: Swift.String?
+  public let pageIndex: Swift.Int?
+  public let pageHasSwipeUp: Swift.Bool?
+  public let pageSwipeUpText: Swift.String?
+  public let pageSwipeUpUrl: Swift.String?
+  public let durationViewedMs: Swift.Float?
+  public let pagesViewedCount: Swift.Int?
+  public let advertiserName: Swift.String?
+  public let adId: Swift.String?
+  public let shareMethod: Swift.String?
+  public let adView: UIKit.UIView?
+  public let videoInitialBuffering: Swift.Bool?
+  public let videoBufferingTime: Foundation.TimeInterval?
+  public let pollAnswerId: Swift.String?
+  public let categories: [Swift.String]?
+  public let storyPlaybackMode: Swift.String
+}
+public struct ClientAd : Swift.Codable {
+  public let id: Swift.String
+  public let advertiserName: Swift.String
+  public let image: Swift.String?
+  public let video: Swift.String?
+  public let playcardUrl: Swift.String?
+  public let duration: Swift.Double?
+  public let trackingPixels: [StorytellerSDK.ClientTrackingPixel]
+  public let swipeUp: StorytellerSDK.ClientAdSwipeUp?
+  public init(id: Swift.String, advertiserName: Swift.String, image: Swift.String?, video: Swift.String?, playcardUrl: Swift.String?, duration: Swift.Double?, trackingPixels: [StorytellerSDK.ClientTrackingPixel], swipeUp: StorytellerSDK.ClientAdSwipeUp?)
+  public var type: Swift.String {
+    get
+  }
+  public init(from decoder: Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+}
+public struct ClientAdSwipeUp : Swift.Codable {
+  public let urlOrStoreId: Swift.String
+  public let type: StorytellerSDK.ClientAdSwipeUpKind
+  public let text: Swift.String?
+  @available(*, deprecated, renamed: "init(urlOrStoreId:type:)")
+  public init(url: Swift.String, kind: StorytellerSDK.ClientAdSwipeUpKind, text: Swift.String? = nil)
+  public init(urlOrStoreId: Swift.String, type: StorytellerSDK.ClientAdSwipeUpKind, text: Swift.String? = nil)
+  public init(from decoder: Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+}
+public enum ClientAdSwipeUpKind : Swift.String, Swift.Codable {
+  case web
+  case inApp
+  case store
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+  public init?(rawValue: Swift.String)
+}
+public struct ClientTrackingPixel : Swift.Codable {
+  public let eventType: Swift.String
+  public let url: Swift.String
+  public init(eventType: Swift.String = "impression", url: Swift.String)
+  public init(from decoder: Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+}
+public struct UserActivity {
+  public enum EventType : Swift.String {
+    case OpenedStory
+    case DismissedStory
+    case SkippedPage
+    case SkippedStory
+    case CompletedPage
+    case CompletedStory
+    case SwipedUp
+    case ShareButtonTapped
+    case ShareSuccess
+    case PreviousPage
+    case PreviousStory
+    case OpenedPage
+    case OpenedAd
+    case DismissedAd
+    case SkippedAd
+    case SwipedUpOnAd
+    case PreviousAd
+    case PausedAdPage
+    case ResumedAdPage
+    case ViewedAdPageComplete
+    case ViewedAdPageFirstQuartile
+    case ViewedAdPageMidpoint
+    case ViewedAdPageThirdQuartile
+    case FinishedAd
+    case ReadyToPlay
+    case MediaStarted
+    case BufferingStarted
+    case BufferingEnded
+    case VotedPoll
+    public typealias RawValue = Swift.String
+    public init?(rawValue: Swift.String)
+    public var rawValue: Swift.String {
+      get
+    }
+  }
+  public enum Key {
+    public static let ActivityType: Swift.String
+    public static let StoryId: Swift.String
+    public static let StoryTitle: Swift.String
+    public static let PageId: Swift.String
+    public static let PageType: Swift.String
+    public static let PageIndex: Swift.String
+    public static let AdId: Swift.String
+    public static let ExternalId: Swift.String
+    public static let PollAnswerId: Swift.String
+  }
+}
+public enum StorytellerRowViewCellType : Swift.String, Swift.Codable, Swift.CaseIterable {
+  case Square
+  case Round
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+  public init?(rawValue: Swift.String)
+  public typealias AllCases = [StorytellerSDK.StorytellerRowViewCellType]
+  public static var allCases: [StorytellerSDK.StorytellerRowViewCellType] {
+    get
+  }
+}
+public struct UserActivityStatus : Swift.Decodable {
+  public let id: Swift.String
+  public let tenantId: Swift.String
+  public let readPages: [Swift.String]?
+  public let pollAnswers: [Swift.String]?
+  public init(from decoder: Swift.Decoder) throws
+}
+public struct Category : Swift.Codable {
+  public var name: Swift.String
+  public var urlName: Swift.String
+  public var externalId: Swift.String
+  public init?(json: StorytellerSDK.JSON)
+  public init(from decoder: Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+}
+extension Category : Swift.Hashable {
+  public var hashValue: Swift.Int {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+  public static func == (a: StorytellerSDK.Category, b: StorytellerSDK.Category) -> Swift.Bool
+}
+public enum StorytellerRowViewStyle : Swift.String {
+  case Auto
+  case Light
+  case Dark
+  public typealias RawValue = Swift.String
+  public init?(rawValue: Swift.String)
+  public var rawValue: Swift.String {
+    get
+  }
+}
+extension StorytellerSDK.StorytellerRowViewError : Swift.Equatable {}
+extension StorytellerSDK.StorytellerRowViewError : Swift.Hashable {}
+extension StorytellerSDK.ElementAlignment : Swift.Equatable {}
+extension StorytellerSDK.ElementAlignment : Swift.Hashable {}
+extension StorytellerSDK.ButtonCasing : Swift.Equatable {}
+extension StorytellerSDK.ButtonCasing : Swift.Hashable {}
+extension StorytellerSDK.ClientAdSwipeUpKind : Swift.Equatable {}
+extension StorytellerSDK.ClientAdSwipeUpKind : Swift.Hashable {}
+extension StorytellerSDK.ClientAdSwipeUpKind : Swift.RawRepresentable {}
+extension StorytellerSDK.UserActivity.EventType : Swift.Equatable {}
+extension StorytellerSDK.UserActivity.EventType : Swift.Hashable {}
+extension StorytellerSDK.UserActivity.EventType : Swift.RawRepresentable {}
+extension StorytellerSDK.StorytellerRowViewCellType : Swift.Equatable {}
+extension StorytellerSDK.StorytellerRowViewCellType : Swift.Hashable {}
+extension StorytellerSDK.StorytellerRowViewCellType : Swift.RawRepresentable {}
+extension StorytellerSDK.StorytellerRowViewStyle : Swift.Equatable {}
+extension StorytellerSDK.StorytellerRowViewStyle : Swift.Hashable {}
+extension StorytellerSDK.StorytellerRowViewStyle : Swift.RawRepresentable {}
