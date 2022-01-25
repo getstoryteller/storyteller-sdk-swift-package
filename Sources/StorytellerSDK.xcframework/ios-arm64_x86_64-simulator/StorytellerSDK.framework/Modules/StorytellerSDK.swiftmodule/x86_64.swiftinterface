@@ -349,6 +349,9 @@ public class Storyteller {
   public func initialize(apiKey: Swift.String, userInput: StorytellerSDK.UserInput? = nil, categoriesToPreload: [Swift.String] = [], onComplete: @escaping StorytellerSDK.VoidCompletion = {}, onError: @escaping StorytellerSDK.ErrorCompletion = { _ in })
   @objc deinit
 }
+public protocol StorytellerGridViewDelegate : AnyObject {
+  func contentSizeDidChange(_ size: CoreGraphics.CGSize)
+}
 public struct ClientStory : Swift.Codable {
   public let id: Swift.String
   public let pages: [Swift.String]
@@ -573,6 +576,7 @@ public enum StorytellerListViewStyle : Swift.String {
 @objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class StorytellerGridView : StorytellerSDK.StorytellerListView {
   @_Concurrency.MainActor(unsafe) public init()
   @objc deinit
+  @_Concurrency.MainActor(unsafe) weak public var gridDelegate: StorytellerSDK.StorytellerGridViewDelegate?
   @objc @IBInspectable @_Concurrency.MainActor(unsafe) public var numberOfColumns: Swift.Int {
     @objc get
     @objc set
