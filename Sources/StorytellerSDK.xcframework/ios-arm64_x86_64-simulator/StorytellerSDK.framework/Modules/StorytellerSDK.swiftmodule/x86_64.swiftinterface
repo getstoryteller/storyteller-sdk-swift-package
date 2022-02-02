@@ -1,5 +1,5 @@
 // swift-interface-format-version: 1.0
-// swift-compiler-version: Apple Swift version 5.5.1 effective-4.2 (swiftlang-1300.0.31.4 clang-1300.0.29.6)
+// swift-compiler-version: Apple Swift version 5.4.2 effective-4.2 (swiftlang-1205.0.28.2 clang-1205.0.19.57)
 // swift-module-flags: -target x86_64-apple-ios11.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 4.2 -enforce-exclusivity=checked -O -module-name StorytellerSDK
 import AVFoundation
 import AVKit
@@ -13,7 +13,6 @@ import StoreKit
 import Swift
 import UIKit
 import WebKit
-import _Concurrency
 import os
 public protocol StorytellerListViewDelegate {
   func onStoriesDataLoadStarted()
@@ -21,7 +20,7 @@ public protocol StorytellerListViewDelegate {
   func onStoryDismissed()
   func tileBecameVisible(index: Swift.Int)
 }
-extension StorytellerSDK.StorytellerListViewDelegate {
+extension StorytellerListViewDelegate {
   public func onStoriesDataLoadStarted()
   public func onStoriesDataLoadComplete(success: Swift.Bool, error: Swift.Error?, dataCount: Swift.Int)
   public func onStoryDismissed()
@@ -33,10 +32,10 @@ public protocol StorytellerDelegate {
   func configureSwipeUpWebView(configuration: inout WebKit.WKWebViewConfiguration)
   func userSwipedUpToApp(swipeUpUrl: Swift.String)
 }
-extension StorytellerSDK.StorytellerDelegate {
+extension StorytellerDelegate {
   public func getAdsForList(stories: [StorytellerSDK.ClientStory], onComplete: @escaping ([StorytellerSDK.ClientAd?]) -> Swift.Void, onError: @escaping (Swift.Error) -> Swift.Void)
 }
-extension StorytellerSDK.StorytellerDelegate {
+extension StorytellerDelegate {
   public func onUserActivityOccurred(type: StorytellerSDK.UserActivity.EventType, data: StorytellerSDK.UserActivityData)
   public func configureSwipeUpWebView(configuration: inout WebKit.WKWebViewConfiguration)
   public func userSwipedUpToApp(swipeUpUrl: Swift.String)
@@ -58,11 +57,11 @@ public struct UserInput {
   public var externalId: Swift.String?
   public init(externalId: Swift.String? = nil)
 }
-extension StorytellerSDK.UserInput : StorytellerSDK.Serializable {
+extension UserInput : StorytellerSDK.Serializable {
   public init?(json: StorytellerSDK.JSON)
   public func serialize() -> StorytellerSDK.JSON?
 }
-extension StorytellerSDK.UserInput : Swift.Equatable {
+extension UserInput : Swift.Equatable {
   public static func == (lhs: StorytellerSDK.UserInput, rhs: StorytellerSDK.UserInput) -> Swift.Bool
 }
 public typealias JSON = [Swift.String : Any]
@@ -70,7 +69,7 @@ public protocol Serializable {
   init?(json: StorytellerSDK.JSON)
   func serialize() -> StorytellerSDK.JSON?
 }
-extension StorytellerSDK.Serializable {
+extension Serializable {
   public func serialize() -> StorytellerSDK.JSON?
 }
 public protocol StorytellerUiThemeType {
@@ -93,37 +92,37 @@ public protocol DefaultValuable {
   associatedtype DefaultValue : StorytellerSDK.DefaultValuable
   static var defaultValue: Self.DefaultValue { get }
 }
-extension UIKit.UIColor : StorytellerSDK.DefaultValuable {
+extension UIColor : StorytellerSDK.DefaultValuable {
   public static var defaultValue: UIKit.UIColor {
     get
   }
   public typealias DefaultValue = UIKit.UIColor
 }
-extension Swift.String : StorytellerSDK.DefaultValuable {
+extension String : StorytellerSDK.DefaultValuable {
   public static var defaultValue: Swift.String {
     get
   }
   public typealias DefaultValue = Swift.String
 }
-extension CoreGraphics.CGFloat : StorytellerSDK.DefaultValuable {
+extension CGFloat : StorytellerSDK.DefaultValuable {
   public static var defaultValue: CoreGraphics.CGFloat {
     get
   }
   public typealias DefaultValue = CoreGraphics.CGFloat
 }
-extension Swift.Bool : StorytellerSDK.DefaultValuable {
+extension Bool : StorytellerSDK.DefaultValuable {
   public static var defaultValue: Swift.Bool {
     get
   }
   public typealias DefaultValue = Swift.Bool
 }
-extension UIKit.NSTextAlignment : StorytellerSDK.DefaultValuable {
+extension NSTextAlignment : StorytellerSDK.DefaultValuable {
   public static var defaultValue: UIKit.NSTextAlignment {
     get
   }
   public typealias DefaultValue = UIKit.NSTextAlignment
 }
-extension UIKit.UIImage : StorytellerSDK.DefaultValuable {
+extension UIImage : StorytellerSDK.DefaultValuable {
   public static var defaultValue: UIKit.UIImage {
     get
   }
@@ -278,8 +277,8 @@ public enum ButtonCasing : StorytellerSDK.DefaultValuable {
     get
   }
 }
-extension UIKit.UIButton {
-  @_Concurrency.MainActor(unsafe) public func setTitle(_ title: Swift.String?, for state: UIKit.UIControl.State, casing: StorytellerSDK.ButtonCasing? = .default)
+extension UIButton {
+  public func setTitle(_ title: Swift.String?, for state: UIKit.UIControl.State, casing: StorytellerSDK.ButtonCasing? = .default)
 }
 open class FontProvider : StorytellerSDK.DefaultValuable {
   public static var defaultValue: StorytellerSDK.FontProvider {
@@ -303,8 +302,8 @@ open class InstructionsIconProvider : StorytellerSDK.DefaultValuable {
   public typealias DefaultValue = StorytellerSDK.InstructionsIconProvider
   @objc deinit
 }
-@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class StorytellerRowView : StorytellerSDK.StorytellerListView {
-  @_Concurrency.MainActor(unsafe) public init()
+@objc @_hasMissingDesignatedInitializers public class StorytellerRowView : StorytellerSDK.StorytellerListView {
+  public init()
   @objc deinit
 }
 public typealias VoidCompletion = () -> Swift.Void
@@ -434,43 +433,44 @@ public enum ClientAdSwipeUpKind : Swift.String, Swift.Codable {
     get
   }
 }
-@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class StorytellerListView : UIKit.UIView {
+@objc @_hasMissingDesignatedInitializers public class StorytellerListView : UIKit.UIView {
   @objc deinit
-  @_Concurrency.MainActor(unsafe) public var categories: [Swift.String] {
+  public var categories: [Swift.String] {
     get
     set
   }
-  @_Concurrency.MainActor(unsafe) public var delegate: StorytellerSDK.StorytellerListViewDelegate? {
+  public var delegate: StorytellerSDK.StorytellerListViewDelegate? {
     get
     set
   }
-  @objc @IBInspectable @_Concurrency.MainActor(unsafe) public var cellType: Swift.String {
+  @objc @IBInspectable public var cellType: Swift.String {
     @objc get
     @objc set
   }
-  @objc @IBInspectable @_Concurrency.MainActor(unsafe) public var cellSpacing: CoreGraphics.CGFloat {
+  @objc @IBInspectable public var cellSpacing: CoreGraphics.CGFloat {
     @objc get
     @objc set
   }
-  @objc @IBInspectable @_Concurrency.MainActor(unsafe) public var insetStart: CoreGraphics.CGFloat {
+  @objc @IBInspectable public var insetStart: CoreGraphics.CGFloat {
     @objc get
     @objc set
   }
-  @objc @IBInspectable @_Concurrency.MainActor(unsafe) public var insetEnd: CoreGraphics.CGFloat {
+  @objc @IBInspectable public var insetEnd: CoreGraphics.CGFloat {
     @objc get
     @objc set
   }
-  @_Concurrency.MainActor(unsafe) public var theme: StorytellerSDK.StorytellerUiThemeType? {
+  public var theme: StorytellerSDK.StorytellerUiThemeType? {
     get
     set
   }
-  @_Concurrency.MainActor(unsafe) public func prepareForReuse()
-  @_Concurrency.MainActor(unsafe) public func openStory(id: Swift.String = "", animated: Swift.Bool = true, onError: ((StorytellerSDK.StorytellerListViewError) -> Swift.Void)? = nil)
-  @_Concurrency.MainActor(unsafe) public func openPage(id: Swift.String = "", animated: Swift.Bool = true, onError: ((StorytellerSDK.StorytellerListViewError) -> Swift.Void)? = nil)
-  @_Concurrency.MainActor(unsafe) public func openDeeplink(url: Foundation.URL, onError: ((StorytellerSDK.StorytellerListViewError) -> Swift.Void)? = nil)
-  @_Concurrency.MainActor(unsafe) public func reloadData()
+  public func prepareForReuse()
+  public func openStory(id: Swift.String = "", animated: Swift.Bool = true, onError: ((StorytellerSDK.StorytellerListViewError) -> Swift.Void)? = nil)
+  public func openPage(id: Swift.String = "", animated: Swift.Bool = true, onError: ((StorytellerSDK.StorytellerListViewError) -> Swift.Void)? = nil)
+  public func openDeeplink(url: Foundation.URL, onError: ((StorytellerSDK.StorytellerListViewError) -> Swift.Void)? = nil)
+  public func reloadData()
   @available(*, deprecated, message: "the method has been moved. Please use `Storyteller.dismissStoryView`")
-  @_Concurrency.MainActor(unsafe) public func dismissStoryView(animated: Swift.Bool, dismissReason: Swift.String? = nil, onComplete: (() -> Swift.Void)? = nil)
+  public func dismissStoryView(animated: Swift.Bool, dismissReason: Swift.String? = nil, onComplete: (() -> Swift.Void)? = nil)
+  @objc override dynamic public init(frame: CoreGraphics.CGRect)
 }
 public struct ClientTrackingPixel : Swift.Codable {
   public let eventType: Swift.String
@@ -556,7 +556,7 @@ public struct Category : Swift.Codable {
   public func encode(to encoder: Swift.Encoder) throws
   public init(from decoder: Swift.Decoder) throws
 }
-extension StorytellerSDK.Category : Swift.Hashable {
+extension Category : Swift.Hashable {
   public func hash(into hasher: inout Swift.Hasher)
   public static func == (a: StorytellerSDK.Category, b: StorytellerSDK.Category) -> Swift.Bool
   public var hashValue: Swift.Int {
@@ -573,16 +573,16 @@ public enum StorytellerListViewStyle : Swift.String {
     get
   }
 }
-@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class StorytellerGridView : StorytellerSDK.StorytellerListView {
-  @_Concurrency.MainActor(unsafe) public init()
+@objc @_hasMissingDesignatedInitializers public class StorytellerGridView : StorytellerSDK.StorytellerListView {
+  public init()
   @objc deinit
-  @_Concurrency.MainActor(unsafe) weak public var gridDelegate: StorytellerSDK.StorytellerGridViewDelegate?
-  @objc @IBInspectable @_Concurrency.MainActor(unsafe) public var numberOfColumns: Swift.Int {
+  weak public var gridDelegate: StorytellerSDK.StorytellerGridViewDelegate?
+  @objc @IBInspectable public var numberOfColumns: Swift.Int {
     @objc get
     @objc set
   }
-  @_Concurrency.MainActor(unsafe) public func reloadData(cell: UIKit.UITableViewCell, tableView: UIKit.UITableView)
-  @_Concurrency.MainActor(unsafe) override public func prepareForReuse()
+  public func reloadData(cell: UIKit.UITableViewCell, tableView: UIKit.UITableView)
+  override public func prepareForReuse()
 }
 extension StorytellerSDK.StorytellerListViewError : Swift.Equatable {}
 extension StorytellerSDK.StorytellerListViewError : Swift.Hashable {}
