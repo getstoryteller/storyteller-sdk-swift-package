@@ -220,22 +220,17 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NSBundle * _
 
 @class NSCoder;
 @class NSString;
-@class NSNumber;
 
 SWIFT_CLASS("_TtC14StorytellerSDK19StorytellerListView")
 @interface StorytellerListView : UIView
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder SWIFT_UNAVAILABLE;
 @property (nonatomic, copy) IBInspectable NSString * _Nonnull cellType;
-@property (nonatomic) IBInspectable CGFloat cellSpacing;
-@property (nonatomic) IBInspectable CGFloat insetStart;
-@property (nonatomic) IBInspectable CGFloat insetEnd;
 - (nonnull instancetype)initWithFrame:(CGRect)frame SWIFT_UNAVAILABLE;
 @end
 
 
 SWIFT_CLASS("_TtC14StorytellerSDK19StorytellerGridView")
 @interface StorytellerGridView : StorytellerListView
-@property (nonatomic) IBInspectable NSInteger numberOfColumns;
 @end
 
 
@@ -243,6 +238,7 @@ SWIFT_CLASS("_TtC14StorytellerSDK19StorytellerGridView")
 SWIFT_CLASS("_TtC14StorytellerSDK18StorytellerRowView")
 @interface StorytellerRowView : StorytellerListView
 @end
+
 
 
 

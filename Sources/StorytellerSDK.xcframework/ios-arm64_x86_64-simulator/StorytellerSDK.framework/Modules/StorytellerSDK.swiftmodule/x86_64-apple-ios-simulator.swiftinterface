@@ -5,8 +5,8 @@ import AVFoundation
 import AVKit
 import AsyncDisplayKit
 import AudioToolbox
+import CryptoKit
 import Foundation
-import PINRemoteImage
 import Photos
 import StoreKit
 import Swift
@@ -14,6 +14,8 @@ import UIKit
 import WebKit
 import os
 public enum PublicAsset {
+  public static let iconQuizAnswerCorrect: StorytellerSDK.PublicImages
+  public static let iconQuizAnswerIncorrect: StorytellerSDK.PublicImages
   public static let backgroundTextPlaceholderRound: StorytellerSDK.PublicImages
   public static let backgroundTextPlaceholderSquareDark: StorytellerSDK.PublicImages
   public static let backgroundTextPlaceholderSquareLight: StorytellerSDK.PublicImages
@@ -26,16 +28,12 @@ public enum PublicAsset {
   public static let iconCloseBlack: StorytellerSDK.PublicImages
   public static let iconCloseWhite: StorytellerSDK.PublicImages
   public static let iconInstructionBackBlack: StorytellerSDK.PublicImages
-  public static let iconInstructionBackGesture: StorytellerSDK.PublicImages
   public static let iconInstructionBackWhite: StorytellerSDK.PublicImages
   public static let iconInstructionForwardBlack: StorytellerSDK.PublicImages
-  public static let iconInstructionForwardGesture: StorytellerSDK.PublicImages
   public static let iconInstructionForwardWhite: StorytellerSDK.PublicImages
   public static let iconInstructionPauseBlack: StorytellerSDK.PublicImages
-  public static let iconInstructionPauseGesture: StorytellerSDK.PublicImages
   public static let iconInstructionPauseWhite: StorytellerSDK.PublicImages
   public static let iconInstructionSwipeBlack: StorytellerSDK.PublicImages
-  public static let iconInstructionSwipeGesture: StorytellerSDK.PublicImages
   public static let iconInstructionSwipeWhite: StorytellerSDK.PublicImages
   public static let iconShare: StorytellerSDK.PublicImages
   public static let placeholderGradientVerticalDark: StorytellerSDK.PublicImages
@@ -115,6 +113,8 @@ public struct UserActivity {
     case BufferingStarted
     case BufferingEnded
     case VotedPoll
+    case TriviaQuizQuestionAnswered
+    case TriviaQuizCompleted
     public init?(rawValue: Swift.String)
     public typealias RawValue = Swift.String
     public var rawValue: Swift.String {
@@ -125,6 +125,12 @@ public struct UserActivity {
     public static let ActivityType: Swift.String
     public static let ExternalId: Swift.String
   }
+}
+extension UIButton {
+  public func setImage(_ image: UIKit.UIImage?)
+}
+extension UIImageView {
+  public func setImage(_ image: UIKit.UIImage?)
 }
 public struct Category : Swift.Codable {
   public var name: Swift.String
@@ -225,12 +231,23 @@ public struct UserActivityData {
   public let timeSinceBufferingBegan: Foundation.TimeInterval?
   public let categories: [Swift.String]?
   public let pollAnswerId: Swift.String?
+  public let triviaQuizId: Swift.String?
+  public let triviaQuizTitle: Swift.String?
+  public let triviaQuizScore: Swift.String?
+  public let triviaQuizQuestionId: Swift.String?
+  public let triviaQuizAnswerId: Swift.String?
 }
 public struct UserActivityStatus : Swift.Decodable {
   public let id: Swift.String
   public let tenantId: Swift.String
   public let readPages: [Swift.String]?
   public let pollAnswers: [Swift.String]?
+  public let triviaQuizAnswers: [StorytellerSDK.UserActivityTriviaQuizAnswerStatus]?
+  public init(from decoder: Swift.Decoder) throws
+}
+public struct UserActivityTriviaQuizAnswerStatus : Swift.Decodable {
+  public let questionId: Swift.String
+  public let answerId: Swift.String
   public init(from decoder: Swift.Decoder) throws
 }
 public struct UserInput {
@@ -257,7 +274,7 @@ public class Storyteller {
   }
   public static var customInstanceHost: Swift.String?
   public static let sharedInstance: StorytellerSDK.Storyteller
-  public static var theme: StorytellerSDK.StorytellerUiThemeType
+  public static var theme: StorytellerSDK.UITheme
   public static var version: Swift.String
   public static var currentUserId: Swift.String? {
     get
@@ -296,9 +313,9 @@ extension StorytellerDelegate {
   public init()
   @objc deinit
   weak public var gridDelegate: StorytellerSDK.StorytellerGridViewDelegate?
-  @objc @IBInspectable public var numberOfColumns: Swift.Int {
-    @objc get
-    @objc set
+  override public var theme: StorytellerSDK.UITheme? {
+    get
+    set
   }
   public func reloadData(cell: UIKit.UITableViewCell, tableView: UIKit.UITableView)
   override public func prepareForReuse()
@@ -320,23 +337,11 @@ public protocol StorytellerGridViewDelegate : AnyObject {
     @objc get
     @objc set
   }
-  @objc @IBInspectable public var cellSpacing: CoreGraphics.CGFloat {
-    @objc get
-    @objc set
-  }
-  @objc @IBInspectable public var insetStart: CoreGraphics.CGFloat {
-    @objc get
-    @objc set
-  }
-  @objc @IBInspectable public var insetEnd: CoreGraphics.CGFloat {
-    @objc get
-    @objc set
-  }
-  public var theme: StorytellerSDK.StorytellerUiThemeType? {
+  public var theme: StorytellerSDK.UITheme? {
     get
     set
   }
-  public var uiStyle: StorytellerSDK.StorytellerListViewStyle {
+  public var uiStyle: StorytellerSDK.UIStyle {
     get
     set
   }
@@ -389,7 +394,6 @@ public enum StorytellerListViewError : Swift.Error {
 }
 public enum StorytellerListViewStyle : Swift.String, Swift.Codable, Swift.CaseIterable {
   case auto
-  case light
   case dark
   public init?(rawValue: Swift.String)
   public typealias AllCases = [StorytellerSDK.StorytellerListViewStyle]
@@ -405,222 +409,37 @@ public enum StorytellerListViewStyle : Swift.String, Swift.Codable, Swift.CaseIt
   public init()
   @objc deinit
 }
-public protocol StorytellerUiThemeType {
-  var lightTheme: StorytellerSDK.StorytellerThemeType { get set }
-  var darkTheme: StorytellerSDK.StorytellerThemeType { get set }
-  var `default`: StorytellerSDK.StorytellerThemeType { get set }
-  func value<T>(_ keyPath: Swift.KeyPath<StorytellerSDK.StorytellerThemeType, T?>, for uiStyle: StorytellerSDK.StorytellerListViewStyle) -> T where T : StorytellerSDK.DefaultValuable
-}
-public class StorytellerUiTheme : StorytellerSDK.StorytellerUiThemeType {
-  public init()
-  public var lightTheme: StorytellerSDK.StorytellerThemeType
-  public var darkTheme: StorytellerSDK.StorytellerThemeType
-  public var `default`: StorytellerSDK.StorytellerThemeType
-  public func value<T>(_ keyPath: Swift.KeyPath<StorytellerSDK.StorytellerThemeType, T?>, for uiStyle: StorytellerSDK.StorytellerListViewStyle) -> T where T : StorytellerSDK.DefaultValuable
-  @objc deinit
-}
-public protocol DefaultValuable {
-  associatedtype DefaultValue : StorytellerSDK.DefaultValuable
-  static var defaultValue: Self.DefaultValue { get }
-}
-extension UIColor : StorytellerSDK.DefaultValuable {
-  public static var defaultValue: UIKit.UIColor {
-    get
-  }
-  public typealias DefaultValue = UIKit.UIColor
-}
-extension String : StorytellerSDK.DefaultValuable {
-  public static var defaultValue: Swift.String {
-    get
-  }
-  public typealias DefaultValue = Swift.String
-}
-extension CGFloat : StorytellerSDK.DefaultValuable {
-  public static var defaultValue: CoreGraphics.CGFloat {
-    get
-  }
-  public typealias DefaultValue = CoreGraphics.CGFloat
-}
-extension Bool : StorytellerSDK.DefaultValuable {
-  public static var defaultValue: Swift.Bool {
-    get
-  }
-  public typealias DefaultValue = Swift.Bool
-}
-extension NSTextAlignment : StorytellerSDK.DefaultValuable {
-  public static var defaultValue: UIKit.NSTextAlignment {
-    get
-  }
-  public typealias DefaultValue = UIKit.NSTextAlignment
-}
-extension UIImage : StorytellerSDK.DefaultValuable {
-  public static var defaultValue: UIKit.UIImage {
-    get
-  }
-  public typealias DefaultValue = UIKit.UIImage
-}
-public protocol StorytellerThemeType {
-  var main: StorytellerSDK.StorytellerMainThemeType { get set }
-  var list: StorytellerSDK.StorytellerListThemeType { get set }
-  var player: StorytellerSDK.StorytellerPlayerThemeType { get set }
-  var instructions: StorytellerSDK.StorytellerInstructionsThemeType { get set }
-  var poll: StorytellerSDK.StorytellerPollThemeType { get set }
-}
-public class StorytellerTheme : StorytellerSDK.StorytellerThemeType {
-  public var main: StorytellerSDK.StorytellerMainThemeType
-  public var list: StorytellerSDK.StorytellerListThemeType
-  public var player: StorytellerSDK.StorytellerPlayerThemeType
-  public var instructions: StorytellerSDK.StorytellerInstructionsThemeType
-  public var poll: StorytellerSDK.StorytellerPollThemeType
-  public static var `default`: StorytellerSDK.StorytellerTheme {
-    get
-  }
-  public init()
-  @objc deinit
-}
-public protocol StorytellerMainThemeType {
-  var primaryColor: UIKit.UIColor? { get set }
-  var secondaryColor: UIKit.UIColor? { get set }
-  var fonts: StorytellerSDK.FontProvider? { get set }
-  var buttonColor: UIKit.UIColor? { get set }
-  var buttonTextColor: UIKit.UIColor? { get set }
-  var buttonRadius: CoreGraphics.CGFloat? { get set }
-  var textColor: UIKit.UIColor? { get set }
-  var reverseTextColor: UIKit.UIColor? { get set }
-  var buttonCasing: StorytellerSDK.ButtonCasing? { get set }
-}
-@_hasMissingDesignatedInitializers final public class StorytellerMainTheme : StorytellerSDK.StorytellerMainThemeType {
-  final public var primaryColor: UIKit.UIColor?
-  final public var secondaryColor: UIKit.UIColor?
-  final public var fonts: StorytellerSDK.FontProvider?
-  final public var buttonColor: UIKit.UIColor?
-  final public var buttonTextColor: UIKit.UIColor?
-  final public var buttonRadius: CoreGraphics.CGFloat?
-  final public var textColor: UIKit.UIColor?
-  final public var reverseTextColor: UIKit.UIColor?
-  final public var buttonCasing: StorytellerSDK.ButtonCasing?
-  public static var defaultValue: StorytellerSDK.StorytellerMainTheme {
-    get
-  }
-  @objc deinit
-}
-public protocol StorytellerListThemeType {
-  var newIndicatorBackgroundColor: UIKit.UIColor? { get set }
-  var newIndicatorBackgroundSecondaryColor: UIKit.UIColor? { get set }
-  var newIndicatorTextColor: UIKit.UIColor? { get set }
-  var newIndicatorTextSize: CoreGraphics.CGFloat? { get set }
-  var newIndicatorAlignment: StorytellerSDK.ElementAlignment? { get set }
-  var storyTitleAlignment: UIKit.NSTextAlignment? { get set }
-  var titleTextSize: CoreGraphics.CGFloat? { get set }
-  var titleLineHeight: CoreGraphics.CGFloat? { get set }
-  var tilePadding: CoreGraphics.CGFloat? { get set }
-}
-@_hasMissingDesignatedInitializers final public class StorytellerListTheme : StorytellerSDK.StorytellerListThemeType {
-  final public var newIndicatorBackgroundColor: UIKit.UIColor?
-  final public var newIndicatorBackgroundSecondaryColor: UIKit.UIColor?
-  final public var newIndicatorTextColor: UIKit.UIColor?
-  final public var newIndicatorTextSize: CoreGraphics.CGFloat?
-  final public var newIndicatorAlignment: StorytellerSDK.ElementAlignment?
-  final public var storyTitleAlignment: UIKit.NSTextAlignment?
-  final public var titleTextSize: CoreGraphics.CGFloat?
-  final public var titleLineHeight: CoreGraphics.CGFloat?
-  final public var tilePadding: CoreGraphics.CGFloat?
-  public static var defaultValue: StorytellerSDK.StorytellerListTheme {
-    get
-  }
-  @objc deinit
-}
-public protocol StorytellerPlayerThemeType {
-  var showStoryIcon: Swift.Bool? { get set }
-  var showTimestamp: Swift.Bool? { get set }
-}
-@_hasMissingDesignatedInitializers final public class StorytellerPlayerTheme : StorytellerSDK.StorytellerPlayerThemeType {
-  final public var showStoryIcon: Swift.Bool?
-  final public var showTimestamp: Swift.Bool?
-  public static var defaultValue: StorytellerSDK.StorytellerPlayerTheme {
-    get
-  }
-  @objc deinit
-}
-public protocol StorytellerInstructionsThemeType {
-  var startButtonBackgroundColor: UIKit.UIColor? { get set }
-  var startButtonTextColor: UIKit.UIColor? { get set }
-  var iconColor: UIKit.UIColor? { get set }
-  var icons: StorytellerSDK.InstructionsIconProvider? { get set }
-  var textColor: UIKit.UIColor? { get set }
-  var backgroundColor: UIKit.UIColor? { get set }
-}
-@_hasMissingDesignatedInitializers final public class StorytellerInstructionsTheme : StorytellerSDK.StorytellerInstructionsThemeType {
-  final public var startButtonBackgroundColor: UIKit.UIColor?
-  final public var startButtonTextColor: UIKit.UIColor?
-  final public var iconColor: UIKit.UIColor?
-  final public var icons: StorytellerSDK.InstructionsIconProvider?
-  final public var textColor: UIKit.UIColor?
-  final public var backgroundColor: UIKit.UIColor?
-  public static var defaultValue: StorytellerSDK.StorytellerInstructionsTheme {
-    get
-  }
-  @objc deinit
-}
-public protocol StorytellerPollThemeType {
-  var percentageBarColor: UIKit.UIColor? { get set }
-  var selectedAnswerBorderColor: UIKit.UIColor? { get set }
-  var selectedAnswerBorderImage: UIKit.UIImage? { get set }
-  var showVoteCount: Swift.Bool? { get set }
-  var showPercentageBarBackground: Swift.Bool? { get set }
-  var answerTextColor: UIKit.UIColor? { get set }
-  var voteCountTextColor: UIKit.UIColor? { get set }
-}
-@_hasMissingDesignatedInitializers final public class StorytellerPollTheme : StorytellerSDK.StorytellerPollThemeType {
-  final public var percentageBarColor: UIKit.UIColor?
-  final public var selectedAnswerBorderColor: UIKit.UIColor?
-  final public var selectedAnswerBorderImage: UIKit.UIImage?
-  final public var showVoteCount: Swift.Bool?
-  final public var showPercentageBarBackground: Swift.Bool?
-  final public var answerTextColor: UIKit.UIColor?
-  final public var voteCountTextColor: UIKit.UIColor?
-  public static var defaultValue: StorytellerSDK.StorytellerPollTheme {
-    get
-  }
-  @objc deinit
-}
-public enum ElementAlignment : StorytellerSDK.DefaultValuable {
+public enum Alignment : Swift.String, Swift.Codable {
   case left
-  case right
   case center
-  public static var defaultValue: StorytellerSDK.ElementAlignment
-  public static func == (a: StorytellerSDK.ElementAlignment, b: StorytellerSDK.ElementAlignment) -> Swift.Bool
-  public func hash(into hasher: inout Swift.Hasher)
-  public typealias DefaultValue = StorytellerSDK.ElementAlignment
-  public var hashValue: Swift.Int {
+  case right
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
     get
   }
 }
-public enum ButtonCasing : StorytellerSDK.DefaultValuable {
-  case `default`
-  case lower
-  case upper
-  public static var defaultValue: StorytellerSDK.ButtonCasing
-  public static func == (a: StorytellerSDK.ButtonCasing, b: StorytellerSDK.ButtonCasing) -> Swift.Bool
-  public func hash(into hasher: inout Swift.Hasher)
-  public typealias DefaultValue = StorytellerSDK.ButtonCasing
-  public var hashValue: Swift.Int {
-    get
-  }
-}
-extension UIButton {
-  public func setTitle(_ title: Swift.String?, for state: UIKit.UIControl.State, casing: StorytellerSDK.ButtonCasing? = .default)
-}
-open class FontProvider : StorytellerSDK.DefaultValuable {
-  public static var defaultValue: StorytellerSDK.FontProvider {
-    get
-  }
-  open func font(weight: UIKit.UIFont.Weight, size: CoreGraphics.CGFloat) -> UIKit.UIFont?
+open class FontProvider : Swift.Codable {
+  open func font(weight: StorytellerSDK.StorytellerFontWeight, size: CoreGraphics.CGFloat) -> UIKit.UIFont?
   public init()
-  public typealias DefaultValue = StorytellerSDK.FontProvider
   @objc deinit
+  open func encode(to encoder: Swift.Encoder) throws
+  required public init(from decoder: Swift.Decoder) throws
 }
-open class InstructionsIconProvider : StorytellerSDK.DefaultValuable {
+public enum StorytellerFontWeight {
+  case medium
+  case heavy
+  case bold
+  case semibold
+  case regular
+  case black
+  public static func == (a: StorytellerSDK.StorytellerFontWeight, b: StorytellerSDK.StorytellerFontWeight) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+open class InstructionsIconProvider {
   public static var defaultValue: StorytellerSDK.InstructionsIconProvider {
     get
   }
@@ -630,8 +449,224 @@ open class InstructionsIconProvider : StorytellerSDK.DefaultValuable {
   public var swipeIconImage: UIKit.UIImage?
   public var closeButtonImage: UIKit.UIImage?
   public init()
-  public typealias DefaultValue = StorytellerSDK.InstructionsIconProvider
   @objc deinit
+}
+public struct InstructionIcons : Swift.Codable {
+  public init(forward: UIKit.UIImage? = nil, pause: UIKit.UIImage? = nil, back: UIKit.UIImage? = nil, move: UIKit.UIImage? = nil)
+  public init(from decoder: Swift.Decoder) throws
+  public var forward: UIKit.UIImage?
+  public var pause: UIKit.UIImage?
+  public var back: UIKit.UIImage?
+  public var move: UIKit.UIImage?
+  public func encode(to encoder: Swift.Encoder) throws
+}
+public struct PlayerIcons : Swift.Codable {
+  public var share: UIKit.UIImage?
+  public var refresh: UIKit.UIImage?
+  public init(from decoder: Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+}
+public enum TextCasing : Swift.String, Swift.Codable {
+  case `default`
+  case lower
+  case upper
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+extension UIButton {
+  public func setTitle(_ title: Swift.String?, for state: UIKit.UIControl.State, casing: StorytellerSDK.TextCasing? = .default)
+}
+public struct Theme : Swift.Codable {
+  public init(from decoder: Swift.Decoder) throws
+  public var colors: StorytellerSDK.Colors
+  public var customFont: StorytellerSDK.FontProvider
+  public var primitives: StorytellerSDK.Primitives
+  public var lists: StorytellerSDK.ListsTheme
+  public var storyTiles: StorytellerSDK.StoryTilesTheme
+  public var player: StorytellerSDK.PlayerTheme
+  public var buttons: StorytellerSDK.ButtonsTheme
+  public var instructions: StorytellerSDK.InstructionsTheme
+  public var engagementUnits: StorytellerSDK.EngagementUnitsTheme
+  public func encode(to encoder: Swift.Encoder) throws
+}
+public struct Primitives : Swift.Codable {
+  public var cornerRadius: CoreGraphics.CGFloat
+  public func encode(to encoder: Swift.Encoder) throws
+  public init(from decoder: Swift.Decoder) throws
+}
+public struct EngagementUnitsTheme : Swift.Codable {
+  public var poll: StorytellerSDK.PollTheme
+  public var triviaQuiz: StorytellerSDK.TriviaQuizTheme
+  public func encode(to encoder: Swift.Encoder) throws
+  public init(from decoder: Swift.Decoder) throws
+}
+public struct PollTheme : Swift.Codable {
+  public init(from decoder: Swift.Decoder) throws
+  public var answerTextColor: UIKit.UIColor?
+  public var percentBarColor: UIKit.UIColor
+  public var selectedAnswerBorderColor: UIKit.UIColor?
+  public var answeredMessageTextColor: UIKit.UIColor?
+  public var selectedAnswerBorderImage: UIKit.UIImage?
+  public var showVoteCount: Swift.Bool
+  public var showPercentBarBackground: Swift.Bool
+  public func encode(to encoder: Swift.Encoder) throws
+}
+public struct TriviaQuizTheme : Swift.Codable {
+  public var correctColor: UIKit.UIColor?
+  public var incorrectColor: UIKit.UIColor?
+  public init(from decoder: Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+}
+public struct InstructionsTheme : Swift.Codable {
+  public init(from decoder: Swift.Decoder) throws
+  public var show: Swift.Bool
+  public var headingColor: UIKit.UIColor?
+  public var subHeadingColor: UIKit.UIColor?
+  public var backgroundColor: UIKit.UIColor?
+  public var icons: StorytellerSDK.InstructionIcons?
+  public var button: StorytellerSDK.InstructionsButtonTheme
+  public func encode(to encoder: Swift.Encoder) throws
+}
+public struct InstructionsButtonTheme : Swift.Codable {
+  public var textColor: UIKit.UIColor?
+  public var backgroundColor: UIKit.UIColor?
+  public init(from decoder: Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+}
+public struct ButtonsTheme : Swift.Codable {
+  public init(from decoder: Swift.Decoder) throws
+  public var backgroundColor: UIKit.UIColor?
+  public var textColor: UIKit.UIColor?
+  public var textCase: StorytellerSDK.TextCasing
+  public var cornerRadius: CoreGraphics.CGFloat?
+  public func encode(to encoder: Swift.Encoder) throws
+}
+public struct PlayerTheme : Swift.Codable {
+  public var icons: StorytellerSDK.PlayerIcons
+  public var showStoryIcon: Swift.Bool
+  public var showTimestamp: Swift.Bool
+  public var showShareButton: Swift.Bool
+  public func encode(to encoder: Swift.Encoder) throws
+  public init(from decoder: Swift.Decoder) throws
+}
+public struct StoryTilesTheme : Swift.Codable {
+  public var title: StorytellerSDK.TitleTheme
+  public var circularTile: StorytellerSDK.CircularTileTheme
+  public var rectangularTile: StorytellerSDK.RectangularTileTheme
+  public func encode(to encoder: Swift.Encoder) throws
+  public init(from decoder: Swift.Decoder) throws
+}
+public struct TitleTheme : Swift.Codable {
+  public var textSize: CoreGraphics.CGFloat
+  public var lineHeight: CoreGraphics.CGFloat
+  public var alignment: StorytellerSDK.Alignment
+  public func encode(to encoder: Swift.Encoder) throws
+  public init(from decoder: Swift.Decoder) throws
+}
+public struct CircularTileTheme : Swift.Codable {
+  public var title: StorytellerSDK.CircularTileTitleTheme
+  public var unreadIndicatorColor: UIKit.UIColor?
+  public var readIndicatorColor: UIKit.UIColor
+  public init(from decoder: Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+}
+public struct CircularTileTitleTheme : Swift.Codable {
+  public var readTextColor: UIKit.UIColor?
+  public var unreadTextColor: UIKit.UIColor?
+  public init(from decoder: Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+}
+public struct RectangularTileTheme : Swift.Codable {
+  public var padding: CoreGraphics.CGFloat
+  public var title: StorytellerSDK.RectangularTileTitleTheme
+  public var unreadIndicator: StorytellerSDK.RectangularUnreadIndicatorTheme
+  public func encode(to encoder: Swift.Encoder) throws
+  public init(from decoder: Swift.Decoder) throws
+}
+public struct RectangularTileTitleTheme : Swift.Codable {
+  public var textColor: UIKit.UIColor?
+  public init(from decoder: Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+}
+public struct RectangularUnreadIndicatorTheme : Swift.Codable {
+  public init(from decoder: Swift.Decoder) throws
+  public var image: UIKit.UIImage?
+  public var alignment: StorytellerSDK.Alignment
+  public var backgroundColor: UIKit.UIColor?
+  public var textColor: UIKit.UIColor?
+  public var textSize: CoreGraphics.CGFloat
+  public func encode(to encoder: Swift.Encoder) throws
+}
+public struct ListsTheme : Swift.Codable {
+  public var row: StorytellerSDK.RowTheme
+  public var grid: StorytellerSDK.GridTheme
+  public var home: StorytellerSDK.HomeTheme
+  public func encode(to encoder: Swift.Encoder) throws
+  public init(from decoder: Swift.Decoder) throws
+}
+public struct RowTheme : Swift.Codable {
+  public var tileSpacing: CoreGraphics.CGFloat
+  public var startInset: CoreGraphics.CGFloat
+  public var endInset: CoreGraphics.CGFloat
+  public func encode(to encoder: Swift.Encoder) throws
+  public init(from decoder: Swift.Decoder) throws
+}
+public struct GridTheme : Swift.Codable {
+  public var tileSpacing: CoreGraphics.CGFloat
+  public var columns: Swift.Int
+  public var topInset: CoreGraphics.CGFloat
+  public var bottomInset: CoreGraphics.CGFloat
+  public func encode(to encoder: Swift.Encoder) throws
+  public init(from decoder: Swift.Decoder) throws
+}
+public struct HomeTheme : Swift.Codable {
+  public var startInset: CoreGraphics.CGFloat
+  public var endInset: CoreGraphics.CGFloat
+  public func encode(to encoder: Swift.Encoder) throws
+  public init(from decoder: Swift.Decoder) throws
+}
+public struct Colors : Swift.Codable {
+  public init(from decoder: Swift.Decoder) throws
+  public var primary: UIKit.UIColor
+  public var success: UIKit.UIColor
+  public var alert: UIKit.UIColor
+  public var white: StorytellerSDK.TextColors
+  public var black: StorytellerSDK.TextColors
+  public func encode(to encoder: Swift.Encoder) throws
+}
+public struct TextColors : Swift.Codable {
+  public var primary: UIKit.UIColor
+  public var secondary: UIKit.UIColor?
+  public var tertiary: UIKit.UIColor?
+  public init(from decoder: Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+}
+@_hasMissingDesignatedInitializers public class ThemeBuilder {
+  @objc deinit
+}
+public enum UIStyle : Swift.String, Swift.Codable, Swift.CaseIterable {
+  case light
+  case dark
+  case auto
+  public init?(rawValue: Swift.String)
+  public typealias AllCases = [StorytellerSDK.UIStyle]
+  public typealias RawValue = Swift.String
+  public static var allCases: [StorytellerSDK.UIStyle] {
+    get
+  }
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public struct UITheme : Swift.Codable {
+  public init()
+  public var dark: StorytellerSDK.Theme
+  public var light: StorytellerSDK.Theme
+  public func encode(to encoder: Swift.Encoder) throws
+  public init(from decoder: Swift.Decoder) throws
 }
 extension StorytellerSDK.UserActivity.EventType : Swift.Equatable {}
 extension StorytellerSDK.UserActivity.EventType : Swift.Hashable {}
@@ -647,7 +682,14 @@ extension StorytellerSDK.StorytellerListViewError : Swift.Hashable {}
 extension StorytellerSDK.StorytellerListViewStyle : Swift.Equatable {}
 extension StorytellerSDK.StorytellerListViewStyle : Swift.Hashable {}
 extension StorytellerSDK.StorytellerListViewStyle : Swift.RawRepresentable {}
-extension StorytellerSDK.ElementAlignment : Swift.Equatable {}
-extension StorytellerSDK.ElementAlignment : Swift.Hashable {}
-extension StorytellerSDK.ButtonCasing : Swift.Equatable {}
-extension StorytellerSDK.ButtonCasing : Swift.Hashable {}
+extension StorytellerSDK.Alignment : Swift.Equatable {}
+extension StorytellerSDK.Alignment : Swift.Hashable {}
+extension StorytellerSDK.Alignment : Swift.RawRepresentable {}
+extension StorytellerSDK.StorytellerFontWeight : Swift.Equatable {}
+extension StorytellerSDK.StorytellerFontWeight : Swift.Hashable {}
+extension StorytellerSDK.TextCasing : Swift.Equatable {}
+extension StorytellerSDK.TextCasing : Swift.Hashable {}
+extension StorytellerSDK.TextCasing : Swift.RawRepresentable {}
+extension StorytellerSDK.UIStyle : Swift.Equatable {}
+extension StorytellerSDK.UIStyle : Swift.Hashable {}
+extension StorytellerSDK.UIStyle : Swift.RawRepresentable {}
