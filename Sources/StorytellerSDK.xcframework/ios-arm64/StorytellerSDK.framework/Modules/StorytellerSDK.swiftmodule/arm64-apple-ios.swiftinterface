@@ -5,6 +5,7 @@ import AVFoundation
 import AVKit
 import AsyncDisplayKit
 import AudioToolbox
+import CommonCrypto
 import CryptoKit
 import Foundation
 import Photos
@@ -23,6 +24,9 @@ public enum PublicAsset {
   public static let bgDiagonalStripeImageAnswer: StorytellerSDK.PublicImages
   public static let bgDiagonalStripeTextLargeAnswer: StorytellerSDK.PublicImages
   public static let bgDiagonalStripeTextSmallAnswer: StorytellerSDK.PublicImages
+  public static let feedBack: StorytellerSDK.PublicImages
+  public static let feedPlay: StorytellerSDK.PublicImages
+  public static let feedShare: StorytellerSDK.PublicImages
   public static let gradientBottom: StorytellerSDK.PublicImages
   public static let iconArrowUp: StorytellerSDK.PublicImages
   public static let iconCloseBlack: StorytellerSDK.PublicImages
@@ -198,6 +202,10 @@ public struct ClientTrackingPixel : Swift.Codable {
   public func encode(to encoder: Swift.Encoder) throws
   public init(from decoder: Swift.Decoder) throws
 }
+public enum OpenStorytellerViewActionHandler {
+  case willShow
+  case failed(Swift.Error)
+}
 public typealias JSON = [Swift.String : Any]
 public protocol Serializable {
   init?(json: StorytellerSDK.JSON)
@@ -293,6 +301,7 @@ public class Storyteller {
   public static func openStory(id: Swift.String, onError: @escaping ((Swift.Error) -> Swift.Void) = { _ in })
   public static func openPage(id: Swift.String, onError: @escaping ((Swift.Error) -> Swift.Void) = { _ in })
   public func initialize(apiKey: Swift.String, userInput: StorytellerSDK.UserInput? = nil, categoriesToPreload: [Swift.String] = [], onComplete: @escaping StorytellerSDK.VoidCompletion = {}, onError: @escaping StorytellerSDK.ErrorCompletion = { _ in })
+  public func openFeed(categoryExternalId: Swift.String, feedTitle: Swift.String?, feedTitleImage: UIKit.UIImage?, actionHandler: @escaping (StorytellerSDK.OpenStorytellerViewActionHandler) -> Swift.Void)
   @objc deinit
 }
 public protocol StorytellerDelegate {
@@ -460,6 +469,9 @@ public struct InstructionIcons : Swift.Codable {
   public var move: UIKit.UIImage?
   public func encode(to encoder: Swift.Encoder) throws
 }
+extension InstructionIcons : Swift.Equatable {
+  public static func == (lhs: StorytellerSDK.InstructionIcons, rhs: StorytellerSDK.InstructionIcons) -> Swift.Bool
+}
 public struct PlayerIcons : Swift.Codable {
   public var share: UIKit.UIImage?
   public var refresh: UIKit.UIImage?
@@ -479,170 +491,223 @@ public enum TextCasing : Swift.String, Swift.Codable {
 extension UIButton {
   public func setTitle(_ title: Swift.String?, for state: UIKit.UIControl.State, casing: StorytellerSDK.TextCasing? = .default)
 }
-public struct Theme : Swift.Codable {
+extension Theme : Swift.Codable {
   public init(from decoder: Swift.Decoder) throws
-  public var colors: StorytellerSDK.Colors
+  public func encode(to encoder: Swift.Encoder) throws
+}
+extension Theme.Colors : Swift.Codable {
+  public init(from decoder: Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+}
+extension Theme.Lists : Swift.Codable {
+  public init(from decoder: Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+}
+extension Theme.StoryTiles.LiveChip : Swift.Codable {
+  public init(from decoder: Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+}
+extension Theme.StoryTiles.CircularTile : Swift.Codable {
+  public init(from decoder: Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+}
+extension Theme.Player : Swift.Codable {
+  public init(from decoder: Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+}
+extension Theme.Buttons : Swift.Codable {
+  public init(from decoder: Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+}
+extension Theme.Instructions : Swift.Codable {
+  public init(from decoder: Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+}
+extension Theme.Instructions.Button : Swift.Codable {
+  public init(from decoder: Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+}
+extension Theme.EngagementUnits.Poll : Swift.Codable {
+  public init(from decoder: Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+}
+extension Theme.EngagementUnits.TriviaQuiz : Swift.Codable {
+  public init(from decoder: Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+}
+extension Theme.StoryTiles.CircularTile.Title : Swift.Codable {
+  public init(from decoder: Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+}
+extension Theme.StoryTiles.RectangularTile.Title : Swift.Codable {
+  public init(from decoder: Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+}
+extension Theme.StoryTiles.RectangularTile.UnreadIndicator : Swift.Codable {
+  public init(from decoder: Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+}
+extension Theme.Colors.Text : Swift.Codable {
+  public init(from decoder: Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+}
+public struct Theme {
+  public struct Colors {
+    public var primary: UIKit.UIColor
+    public var success: UIKit.UIColor
+    public var alert: UIKit.UIColor
+    public var white: StorytellerSDK.Theme.Colors.Text
+    public var black: StorytellerSDK.Theme.Colors.Text
+    public struct Text {
+      public var primary: UIKit.UIColor
+      public var secondary: UIKit.UIColor?
+      public var tertiary: UIKit.UIColor?
+    }
+  }
+  public struct Primitives : Swift.Codable {
+    public var cornerRadius: CoreGraphics.CGFloat
+    public func encode(to encoder: Swift.Encoder) throws
+    public init(from decoder: Swift.Decoder) throws
+  }
+  public struct Lists {
+    public var backgroundColor: UIKit.UIColor?
+    public var row: StorytellerSDK.Theme.Lists.Row
+    public var grid: StorytellerSDK.Theme.Lists.Grid
+    public var home: StorytellerSDK.Theme.Lists.Home
+    public struct Row : Swift.Codable {
+      public var tileSpacing: CoreGraphics.CGFloat
+      public var startInset: CoreGraphics.CGFloat
+      public var endInset: CoreGraphics.CGFloat
+      public func encode(to encoder: Swift.Encoder) throws
+      public init(from decoder: Swift.Decoder) throws
+    }
+    public struct Grid : Swift.Codable {
+      public var tileSpacing: CoreGraphics.CGFloat
+      public var columns: Swift.Int
+      public var topInset: CoreGraphics.CGFloat
+      public var bottomInset: CoreGraphics.CGFloat
+      public func encode(to encoder: Swift.Encoder) throws
+      public init(from decoder: Swift.Decoder) throws
+    }
+    public struct Home : Swift.Codable {
+      public var startInset: CoreGraphics.CGFloat
+      public var endInset: CoreGraphics.CGFloat
+      public func encode(to encoder: Swift.Encoder) throws
+      public init(from decoder: Swift.Decoder) throws
+    }
+  }
+  public struct StoryTiles : Swift.Codable {
+    public struct Chip : Swift.Codable {
+      public var textSize: CoreGraphics.CGFloat
+      public func encode(to encoder: Swift.Encoder) throws
+      public init(from decoder: Swift.Decoder) throws
+    }
+    public struct LiveChip {
+      public var readImage: UIKit.UIImage?
+      public var unreadImage: UIKit.UIImage?
+      public var readBackgroundColor: UIKit.UIColor?
+      public var unreadBackgroundColor: UIKit.UIColor?
+      public var textColor: UIKit.UIColor?
+    }
+    public struct Title : Swift.Codable {
+      public var textSize: CoreGraphics.CGFloat
+      public var lineHeight: CoreGraphics.CGFloat
+      public var alignment: StorytellerSDK.Alignment
+      public func encode(to encoder: Swift.Encoder) throws
+      public init(from decoder: Swift.Decoder) throws
+    }
+    public struct CircularTile {
+      public var title: StorytellerSDK.Theme.StoryTiles.CircularTile.Title
+      public var unreadIndicatorColor: UIKit.UIColor?
+      public var readIndicatorColor: UIKit.UIColor
+      public struct Title {
+        public var readTextColor: UIKit.UIColor?
+        public var unreadTextColor: UIKit.UIColor?
+      }
+    }
+    public struct RectangularTile : Swift.Codable {
+      public var padding: CoreGraphics.CGFloat
+      public var title: StorytellerSDK.Theme.StoryTiles.RectangularTile.Title
+      public var chip: StorytellerSDK.Theme.StoryTiles.RectangularTile.Chip
+      public var unreadIndicator: StorytellerSDK.Theme.StoryTiles.RectangularTile.UnreadIndicator
+      public struct Title {
+        public var textColor: UIKit.UIColor?
+      }
+      public struct Chip : Swift.Codable {
+        public var alignment: StorytellerSDK.Alignment
+        public func encode(to encoder: Swift.Encoder) throws
+        public init(from decoder: Swift.Decoder) throws
+      }
+      public struct UnreadIndicator {
+        public var image: UIKit.UIImage?
+        public var backgroundColor: UIKit.UIColor?
+        public var textColor: UIKit.UIColor?
+        public var textSize: CoreGraphics.CGFloat
+      }
+      public func encode(to encoder: Swift.Encoder) throws
+      public init(from decoder: Swift.Decoder) throws
+    }
+    public var chip: StorytellerSDK.Theme.StoryTiles.Chip
+    public var liveChip: StorytellerSDK.Theme.StoryTiles.LiveChip
+    public var title: StorytellerSDK.Theme.StoryTiles.Title
+    public var circularTile: StorytellerSDK.Theme.StoryTiles.CircularTile
+    public var rectangularTile: StorytellerSDK.Theme.StoryTiles.RectangularTile
+    public func encode(to encoder: Swift.Encoder) throws
+    public init(from decoder: Swift.Decoder) throws
+  }
+  public struct EngagementUnits : Swift.Codable {
+    public var poll: StorytellerSDK.Theme.EngagementUnits.Poll
+    public var triviaQuiz: StorytellerSDK.Theme.EngagementUnits.TriviaQuiz
+    public struct Poll {
+      public var answerTextColor: UIKit.UIColor?
+      public var percentBarColor: UIKit.UIColor
+      public var selectedAnswerBorderColor: UIKit.UIColor?
+      public var answeredMessageTextColor: UIKit.UIColor?
+      public var selectedAnswerBorderImage: UIKit.UIImage?
+      public var showVoteCount: Swift.Bool
+      public var showPercentBarBackground: Swift.Bool
+    }
+    public struct TriviaQuiz {
+      public var correctColor: UIKit.UIColor?
+      public var incorrectColor: UIKit.UIColor?
+    }
+    public func encode(to encoder: Swift.Encoder) throws
+    public init(from decoder: Swift.Decoder) throws
+  }
+  public struct Player {
+    public var icons: StorytellerSDK.PlayerIcons
+    public var liveChipImage: UIKit.UIImage?
+    public var showStoryIcon: Swift.Bool
+    public var showTimestamp: Swift.Bool
+    public var showShareButton: Swift.Bool
+  }
+  public struct Buttons {
+    public var backgroundColor: UIKit.UIColor?
+    public var textColor: UIKit.UIColor?
+    public var textCase: StorytellerSDK.TextCasing
+    public var cornerRadius: CoreGraphics.CGFloat?
+  }
+  public struct Instructions {
+    public var show: Swift.Bool
+    public var headingColor: UIKit.UIColor?
+    public var subHeadingColor: UIKit.UIColor?
+    public var backgroundColor: UIKit.UIColor?
+    public var icons: StorytellerSDK.InstructionIcons?
+    public var button: StorytellerSDK.Theme.Instructions.Button
+    public struct Button {
+      public var textColor: UIKit.UIColor?
+      public var backgroundColor: UIKit.UIColor?
+    }
+  }
+  public var colors: StorytellerSDK.Theme.Colors
   public var customFont: StorytellerSDK.FontProvider
-  public var primitives: StorytellerSDK.Primitives
-  public var lists: StorytellerSDK.ListsTheme
-  public var storyTiles: StorytellerSDK.StoryTilesTheme
-  public var player: StorytellerSDK.PlayerTheme
-  public var buttons: StorytellerSDK.ButtonsTheme
-  public var instructions: StorytellerSDK.InstructionsTheme
-  public var engagementUnits: StorytellerSDK.EngagementUnitsTheme
-  public func encode(to encoder: Swift.Encoder) throws
-}
-public struct Primitives : Swift.Codable {
-  public var cornerRadius: CoreGraphics.CGFloat
-  public func encode(to encoder: Swift.Encoder) throws
-  public init(from decoder: Swift.Decoder) throws
-}
-public struct EngagementUnitsTheme : Swift.Codable {
-  public var poll: StorytellerSDK.PollTheme
-  public var triviaQuiz: StorytellerSDK.TriviaQuizTheme
-  public func encode(to encoder: Swift.Encoder) throws
-  public init(from decoder: Swift.Decoder) throws
-}
-public struct PollTheme : Swift.Codable {
-  public init(from decoder: Swift.Decoder) throws
-  public var answerTextColor: UIKit.UIColor?
-  public var percentBarColor: UIKit.UIColor
-  public var selectedAnswerBorderColor: UIKit.UIColor?
-  public var answeredMessageTextColor: UIKit.UIColor?
-  public var selectedAnswerBorderImage: UIKit.UIImage?
-  public var showVoteCount: Swift.Bool
-  public var showPercentBarBackground: Swift.Bool
-  public func encode(to encoder: Swift.Encoder) throws
-}
-public struct TriviaQuizTheme : Swift.Codable {
-  public var correctColor: UIKit.UIColor?
-  public var incorrectColor: UIKit.UIColor?
-  public init(from decoder: Swift.Decoder) throws
-  public func encode(to encoder: Swift.Encoder) throws
-}
-public struct InstructionsTheme : Swift.Codable {
-  public init(from decoder: Swift.Decoder) throws
-  public var show: Swift.Bool
-  public var headingColor: UIKit.UIColor?
-  public var subHeadingColor: UIKit.UIColor?
-  public var backgroundColor: UIKit.UIColor?
-  public var icons: StorytellerSDK.InstructionIcons?
-  public var button: StorytellerSDK.InstructionsButtonTheme
-  public func encode(to encoder: Swift.Encoder) throws
-}
-public struct InstructionsButtonTheme : Swift.Codable {
-  public var textColor: UIKit.UIColor?
-  public var backgroundColor: UIKit.UIColor?
-  public init(from decoder: Swift.Decoder) throws
-  public func encode(to encoder: Swift.Encoder) throws
-}
-public struct ButtonsTheme : Swift.Codable {
-  public init(from decoder: Swift.Decoder) throws
-  public var backgroundColor: UIKit.UIColor?
-  public var textColor: UIKit.UIColor?
-  public var textCase: StorytellerSDK.TextCasing
-  public var cornerRadius: CoreGraphics.CGFloat?
-  public func encode(to encoder: Swift.Encoder) throws
-}
-public struct PlayerTheme : Swift.Codable {
-  public var icons: StorytellerSDK.PlayerIcons
-  public var showStoryIcon: Swift.Bool
-  public var showTimestamp: Swift.Bool
-  public var showShareButton: Swift.Bool
-  public func encode(to encoder: Swift.Encoder) throws
-  public init(from decoder: Swift.Decoder) throws
-}
-public struct StoryTilesTheme : Swift.Codable {
-  public var title: StorytellerSDK.TitleTheme
-  public var circularTile: StorytellerSDK.CircularTileTheme
-  public var rectangularTile: StorytellerSDK.RectangularTileTheme
-  public func encode(to encoder: Swift.Encoder) throws
-  public init(from decoder: Swift.Decoder) throws
-}
-public struct TitleTheme : Swift.Codable {
-  public var textSize: CoreGraphics.CGFloat
-  public var lineHeight: CoreGraphics.CGFloat
-  public var alignment: StorytellerSDK.Alignment
-  public func encode(to encoder: Swift.Encoder) throws
-  public init(from decoder: Swift.Decoder) throws
-}
-public struct CircularTileTheme : Swift.Codable {
-  public var title: StorytellerSDK.CircularTileTitleTheme
-  public var unreadIndicatorColor: UIKit.UIColor?
-  public var readIndicatorColor: UIKit.UIColor
-  public init(from decoder: Swift.Decoder) throws
-  public func encode(to encoder: Swift.Encoder) throws
-}
-public struct CircularTileTitleTheme : Swift.Codable {
-  public var readTextColor: UIKit.UIColor?
-  public var unreadTextColor: UIKit.UIColor?
-  public init(from decoder: Swift.Decoder) throws
-  public func encode(to encoder: Swift.Encoder) throws
-}
-public struct RectangularTileTheme : Swift.Codable {
-  public var padding: CoreGraphics.CGFloat
-  public var title: StorytellerSDK.RectangularTileTitleTheme
-  public var unreadIndicator: StorytellerSDK.RectangularUnreadIndicatorTheme
-  public func encode(to encoder: Swift.Encoder) throws
-  public init(from decoder: Swift.Decoder) throws
-}
-public struct RectangularTileTitleTheme : Swift.Codable {
-  public var textColor: UIKit.UIColor?
-  public init(from decoder: Swift.Decoder) throws
-  public func encode(to encoder: Swift.Encoder) throws
-}
-public struct RectangularUnreadIndicatorTheme : Swift.Codable {
-  public init(from decoder: Swift.Decoder) throws
-  public var image: UIKit.UIImage?
-  public var alignment: StorytellerSDK.Alignment
-  public var backgroundColor: UIKit.UIColor?
-  public var textColor: UIKit.UIColor?
-  public var textSize: CoreGraphics.CGFloat
-  public func encode(to encoder: Swift.Encoder) throws
-}
-public struct ListsTheme : Swift.Codable {
-  public var row: StorytellerSDK.RowTheme
-  public var grid: StorytellerSDK.GridTheme
-  public var home: StorytellerSDK.HomeTheme
-  public func encode(to encoder: Swift.Encoder) throws
-  public init(from decoder: Swift.Decoder) throws
-}
-public struct RowTheme : Swift.Codable {
-  public var tileSpacing: CoreGraphics.CGFloat
-  public var startInset: CoreGraphics.CGFloat
-  public var endInset: CoreGraphics.CGFloat
-  public func encode(to encoder: Swift.Encoder) throws
-  public init(from decoder: Swift.Decoder) throws
-}
-public struct GridTheme : Swift.Codable {
-  public var tileSpacing: CoreGraphics.CGFloat
-  public var columns: Swift.Int
-  public var topInset: CoreGraphics.CGFloat
-  public var bottomInset: CoreGraphics.CGFloat
-  public func encode(to encoder: Swift.Encoder) throws
-  public init(from decoder: Swift.Decoder) throws
-}
-public struct HomeTheme : Swift.Codable {
-  public var startInset: CoreGraphics.CGFloat
-  public var endInset: CoreGraphics.CGFloat
-  public func encode(to encoder: Swift.Encoder) throws
-  public init(from decoder: Swift.Decoder) throws
-}
-public struct Colors : Swift.Codable {
-  public init(from decoder: Swift.Decoder) throws
-  public var primary: UIKit.UIColor
-  public var success: UIKit.UIColor
-  public var alert: UIKit.UIColor
-  public var white: StorytellerSDK.TextColors
-  public var black: StorytellerSDK.TextColors
-  public func encode(to encoder: Swift.Encoder) throws
-}
-public struct TextColors : Swift.Codable {
-  public var primary: UIKit.UIColor
-  public var secondary: UIKit.UIColor?
-  public var tertiary: UIKit.UIColor?
-  public init(from decoder: Swift.Decoder) throws
-  public func encode(to encoder: Swift.Encoder) throws
+  public var primitives: StorytellerSDK.Theme.Primitives
+  public var lists: StorytellerSDK.Theme.Lists
+  public var storyTiles: StorytellerSDK.Theme.StoryTiles
+  public var player: StorytellerSDK.Theme.Player
+  public var buttons: StorytellerSDK.Theme.Buttons
+  public var instructions: StorytellerSDK.Theme.Instructions
+  public var engagementUnits: StorytellerSDK.Theme.EngagementUnits
 }
 @_hasMissingDesignatedInitializers public class ThemeBuilder {
   @objc deinit

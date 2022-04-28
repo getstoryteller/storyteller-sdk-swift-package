@@ -209,6 +209,7 @@ typedef unsigned int swift_uint4  __attribute__((__ext_vector_type__(4)));
 #endif
 
 
+
 @class NSBundle;
 
 SWIFT_CLASS("_TtC14StorytellerSDK15PublicResources")
@@ -238,6 +239,9 @@ SWIFT_CLASS("_TtC14StorytellerSDK19StorytellerGridView")
 SWIFT_CLASS("_TtC14StorytellerSDK18StorytellerRowView")
 @interface StorytellerRowView : StorytellerListView
 @end
+
+
+
 
 
 
