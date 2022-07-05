@@ -210,6 +210,23 @@ typedef unsigned int swift_uint4  __attribute__((__ext_vector_type__(4)));
 
 
 
+@class NSCoder;
+
+SWIFT_CLASS("_TtC14StorytellerSDK13ClipsListView")
+@interface ClipsListView : UIView
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
+- (nonnull instancetype)initWithFrame:(CGRect)frame SWIFT_UNAVAILABLE;
+@end
+
+
+SWIFT_CLASS("_TtC14StorytellerSDK8HomeView")
+@interface HomeView : UIView
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
++ (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
+- (nonnull instancetype)initWithFrame:(CGRect)frame SWIFT_UNAVAILABLE;
+@end
+
 @class NSBundle;
 
 SWIFT_CLASS("_TtC14StorytellerSDK15PublicResources")
@@ -219,7 +236,16 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NSBundle * _
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
-@class NSCoder;
+
+SWIFT_CLASS("_TtC14StorytellerSDK24StorytellerClipsGridView")
+@interface StorytellerClipsGridView : ClipsListView
+@end
+
+
+SWIFT_CLASS("_TtC14StorytellerSDK23StorytellerClipsRowView")
+@interface StorytellerClipsRowView : ClipsListView
+@end
+
 @class NSString;
 
 SWIFT_CLASS("_TtC14StorytellerSDK19StorytellerListView")
@@ -235,10 +261,19 @@ SWIFT_CLASS("_TtC14StorytellerSDK19StorytellerGridView")
 @end
 
 
+SWIFT_CLASS("_TtC14StorytellerSDK19StorytellerHomeView")
+@interface StorytellerHomeView : UIView
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
+- (nonnull instancetype)initWithFrame:(CGRect)frame SWIFT_UNAVAILABLE;
+@end
+
+
 
 SWIFT_CLASS("_TtC14StorytellerSDK18StorytellerRowView")
 @interface StorytellerRowView : StorytellerListView
 @end
+
 
 
 
