@@ -355,8 +355,9 @@ extension StorytellerHomeDelegate {
   public func onPlayerDismissed()
   public func tileBecameVisible(contentIndex: Swift.Int, collectionTitle: Swift.String?)
 }
-@objc @_hasMissingDesignatedInitializers public class StorytellerHomeView : UIKit.UIView {
+@objc public class StorytellerHomeView : UIKit.UIView {
   @objc dynamic public init()
+  @objc required dynamic public init?(coder: Foundation.NSCoder)
   public var theme: StorytellerSDK.UITheme? {
     get
     set
@@ -365,9 +366,9 @@ extension StorytellerHomeDelegate {
     get
     set
   }
-  public var homeId: Swift.String? {
-    get
-    set
+  @objc @IBInspectable public var homeId: Swift.String? {
+    @objc get
+    @objc set
   }
   weak public var delegate: StorytellerSDK.StorytellerHomeDelegate? {
     get
@@ -676,8 +677,6 @@ public struct Theme {
     public struct Grid : Swift.Codable {
       public var tileSpacing: CoreGraphics.CGFloat
       public var columns: Swift.Int
-      public var topInset: CoreGraphics.CGFloat
-      public var bottomInset: CoreGraphics.CGFloat
       public func encode(to encoder: Swift.Encoder) throws
       public init(from decoder: Swift.Decoder) throws
     }

@@ -264,7 +264,8 @@ SWIFT_CLASS("_TtC14StorytellerSDK19StorytellerGridView")
 SWIFT_CLASS("_TtC14StorytellerSDK19StorytellerHomeView")
 @interface StorytellerHomeView : UIView
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder OBJC_DESIGNATED_INITIALIZER;
+@property (nonatomic, copy) IBInspectable NSString * _Nullable homeId;
 - (nonnull instancetype)initWithFrame:(CGRect)frame SWIFT_UNAVAILABLE;
 @end
 
