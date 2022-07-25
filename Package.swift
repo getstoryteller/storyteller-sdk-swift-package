@@ -17,18 +17,10 @@ let package = Package(
     ],
     targets: [
       .binaryTarget(name: "StorytellerSDK", path: "./Sources/StorytellerSDK.xcframework"),
-      .binaryTarget(name: "AsyncDisplayKit", path: "./Sources/AsyncDisplayKit.xcframework"),
-      .binaryTarget(name: "PINCache", path: "./Sources/PINCache.xcframework"),
-      .binaryTarget(name: "PINOperation", path: "./Sources/PINOperation.xcframework"),
-      .binaryTarget(name: "PINRemoteImage", path: "./Sources/PINRemoteImage.xcframework"),
       .target(
         name: "StorytellerSDKTargets",
         dependencies: [
-          .target(name: "StorytellerSDK"),
-          .target(name: "AsyncDisplayKit"),
-          .target(name: "PINCache"),
-          .target(name: "PINOperation"),
-          .target(name: "PINRemoteImage")
+          .target(name: "StorytellerSDK")
         ]
       )
     ]
