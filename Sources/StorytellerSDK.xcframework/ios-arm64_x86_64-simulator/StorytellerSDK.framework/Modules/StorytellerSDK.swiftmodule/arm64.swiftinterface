@@ -509,6 +509,7 @@ public enum StorytellerListViewStyle : Swift.String, Swift.Codable, Swift.CaseIt
 }
 @objc @_hasMissingDesignatedInitializers public class StorytellerRowView : StorytellerSDK.StorytellerListView {
   public init()
+  public init(showInitialPlaceholder: Swift.Bool)
   @objc deinit
 }
 public enum Alignment : Swift.String, Swift.Codable {
