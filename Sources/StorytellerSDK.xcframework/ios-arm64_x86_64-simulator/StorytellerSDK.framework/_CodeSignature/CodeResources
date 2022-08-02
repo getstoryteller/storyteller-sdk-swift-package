@@ -14,7 +14,7 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		cuajCGODQCMasc9ljc386ffNnkQ=
+		asNrO06OsTIn1XUvi+l3fwURdM8=
 		</data>
 		<key>Modules/StorytellerSDK.swiftmodule/arm64-apple-ios-simulator.swiftdoc</key>
 		<data>
@@ -26,7 +26,7 @@
 		</data>
 		<key>Modules/StorytellerSDK.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		nlD/yx9AUftQEpY8kBsGf4t+f/k=
+		qWH3bVxA1VmX39WVriRIFFYt43A=
 		</data>
 		<key>Modules/StorytellerSDK.swiftmodule/arm64.swiftdoc</key>
 		<data>
@@ -38,7 +38,7 @@
 		</data>
 		<key>Modules/StorytellerSDK.swiftmodule/arm64.swiftmodule</key>
 		<data>
-		nlD/yx9AUftQEpY8kBsGf4t+f/k=
+		qWH3bVxA1VmX39WVriRIFFYt43A=
 		</data>
 		<key>Modules/StorytellerSDK.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
 		<data>
@@ -50,7 +50,7 @@
 		</data>
 		<key>Modules/StorytellerSDK.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		RmKSHz0KQkR8QLfFjVAx6/tt3es=
+		U8eLEew1rOvXfeX0YSk9mqbUv3k=
 		</data>
 		<key>Modules/StorytellerSDK.swiftmodule/x86_64.swiftdoc</key>
 		<data>
@@ -62,7 +62,7 @@
 		</data>
 		<key>Modules/StorytellerSDK.swiftmodule/x86_64.swiftmodule</key>
 		<data>
-		RmKSHz0KQkR8QLfFjVAx6/tt3es=
+		U8eLEew1rOvXfeX0YSk9mqbUv3k=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -70,15 +70,15 @@
 		</data>
 		<key>StorytellerGridView.nib</key>
 		<data>
-		qgFVU2xlnsHZYHMf0hyQ2h1wY34=
+		hvVHm/B3aMScbWARkqYe7tHyzkE=
 		</data>
 		<key>StorytellerHomeView.nib</key>
 		<data>
-		jlNeBBH2i0dbCbiXTl6SXhFzEEk=
+		HSjZua0E7Gbp5JTtVQ+SNcZMGU0=
 		</data>
 		<key>StorytellerRowView.nib</key>
 		<data>
-		yny0FO+BqfSNyHCHFtRRfn/Ayws=
+		KUnHz5c+psHqgTGxr/nuWn1kZV4=
 		</data>
 		<key>mute.aiff</key>
 		<data>
@@ -119,7 +119,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			9yB14pvYG+gNEE899SHeWIuJsKTBw9IjjY7oLGh3Uxg=
+			AsyDDt1PtQw0PKC9USmROSXK+aXDD/72HDpal1a7sIc=
 			</data>
 		</dict>
 		<key>Modules/StorytellerSDK.swiftmodule/arm64.swiftdoc</key>
@@ -140,7 +140,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			9yB14pvYG+gNEE899SHeWIuJsKTBw9IjjY7oLGh3Uxg=
+			AsyDDt1PtQw0PKC9USmROSXK+aXDD/72HDpal1a7sIc=
 			</data>
 		</dict>
 		<key>Modules/StorytellerSDK.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
@@ -161,7 +161,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			VdfQUgAdaY9RyYAHDBqwn9E9AoYCZ1KKyea3JBWQKo0=
+			JYtKS3bQTE7cJE0aWlDGYGdOHwrqrsxL9TpGcKFp5no=
 			</data>
 		</dict>
 		<key>Modules/StorytellerSDK.swiftmodule/x86_64.swiftdoc</key>
@@ -182,7 +182,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			VdfQUgAdaY9RyYAHDBqwn9E9AoYCZ1KKyea3JBWQKo0=
+			JYtKS3bQTE7cJE0aWlDGYGdOHwrqrsxL9TpGcKFp5no=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
@@ -196,21 +196,21 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			cCwZCj++4dD7XdTKGnpzkGZhkt8sUBC4JFKwNVb4emo=
+			RKtvegAXkM9eQO7w8p/0Vvx3RoOUsVrzKd3jz/1IsMo=
 			</data>
 		</dict>
 		<key>StorytellerHomeView.nib</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			AxipbzTkMPA5HYCKSobb5eZxIVQsLbNh0BTETPqBPxo=
+			5qLSFdl+DN5cQd7hTXTrILW62pXb3ErGSuFTMNE4Lcc=
 			</data>
 		</dict>
 		<key>StorytellerRowView.nib</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			45IbLxn9YEqBm8tNpoyKFg/h2gD+jbwan0V0CWS41Sw=
+			6VIeHcDAZxgg9EFzW+yEVRWuO1jB8fwUzYHova02tWM=
 			</data>
 		</dict>
 		<key>mute.aiff</key>
