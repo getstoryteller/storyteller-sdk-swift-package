@@ -468,6 +468,7 @@ public protocol StorytellerGridViewDelegate : AnyObject {
     get
     set
   }
+  @objc override dynamic public func traitCollectionDidChange(_ previousTraitCollection: UIKit.UITraitCollection?)
   public func prepareForReuse()
   public func openStory(id: Swift.String = "", animated: Swift.Bool = true, onError: ((StorytellerSDK.StorytellerListViewError) -> Swift.Void)? = nil)
   public func openPage(id: Swift.String = "", animated: Swift.Bool = true, onError: ((StorytellerSDK.StorytellerListViewError) -> Swift.Void)? = nil)
@@ -601,7 +602,7 @@ extension Theme.Lists.Home.Heading : Swift.Codable {
   public init(from decoder: Swift.Decoder) throws
   public func encode(to encoder: Swift.Encoder) throws
 }
-extension Theme.StoryTiles.LiveChip : Swift.Codable {
+extension Theme.LiveChip : Swift.Codable {
   public init(from decoder: Swift.Decoder) throws
   public func encode(to encoder: Swift.Encoder) throws
 }
@@ -667,6 +668,13 @@ public struct Theme {
     public func encode(to encoder: Swift.Encoder) throws
     public init(from decoder: Swift.Decoder) throws
   }
+  public struct LiveChip {
+    public var readImage: UIKit.UIImage?
+    public var unreadImage: UIKit.UIImage?
+    public var readBackgroundColor: UIKit.UIColor?
+    public var unreadBackgroundColor: UIKit.UIColor?
+    public var textColor: UIKit.UIColor?
+  }
   public struct Lists {
     public struct Row : Swift.Codable {
       public var tileSpacing: CoreGraphics.CGFloat
@@ -702,13 +710,6 @@ public struct Theme {
       public func encode(to encoder: Swift.Encoder) throws
       public init(from decoder: Swift.Decoder) throws
     }
-    public struct LiveChip {
-      public var readImage: UIKit.UIImage?
-      public var unreadImage: UIKit.UIImage?
-      public var readBackgroundColor: UIKit.UIColor?
-      public var unreadBackgroundColor: UIKit.UIColor?
-      public var textColor: UIKit.UIColor?
-    }
     public struct Title : Swift.Codable {
       public var show: Swift.Bool
       public var textSize: CoreGraphics.CGFloat
@@ -721,6 +722,9 @@ public struct Theme {
       public var title: StorytellerSDK.Theme.StoryTiles.CircularTile.Title
       public var unreadIndicatorColor: UIKit.UIColor?
       public var readIndicatorColor: UIKit.UIColor
+      public var unreadBorderWidth: CoreGraphics.CGFloat
+      public var readBorderWidth: CoreGraphics.CGFloat
+      public var liveChip: StorytellerSDK.Theme.LiveChip
       public struct Title {
         public var readTextColor: UIKit.UIColor?
         public var unreadTextColor: UIKit.UIColor?
@@ -731,6 +735,7 @@ public struct Theme {
       public var title: StorytellerSDK.Theme.StoryTiles.RectangularTile.Title
       public var chip: StorytellerSDK.Theme.StoryTiles.RectangularTile.Chip
       public var unreadIndicator: StorytellerSDK.Theme.StoryTiles.RectangularTile.UnreadIndicator
+      public var liveChip: StorytellerSDK.Theme.LiveChip
       public struct Title {
         public var textColor: UIKit.UIColor?
       }
@@ -749,7 +754,6 @@ public struct Theme {
       public init(from decoder: Swift.Decoder) throws
     }
     public var chip: StorytellerSDK.Theme.StoryTiles.Chip
-    public var liveChip: StorytellerSDK.Theme.StoryTiles.LiveChip
     public var title: StorytellerSDK.Theme.StoryTiles.Title
     public var circularTile: StorytellerSDK.Theme.StoryTiles.CircularTile
     public var rectangularTile: StorytellerSDK.Theme.StoryTiles.RectangularTile

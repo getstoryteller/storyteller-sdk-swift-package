@@ -247,11 +247,13 @@ SWIFT_CLASS("_TtC14StorytellerSDK23StorytellerClipsRowView")
 @end
 
 @class NSString;
+@class UITraitCollection;
 
 SWIFT_CLASS("_TtC14StorytellerSDK19StorytellerListView")
 @interface StorytellerListView : UIView
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder SWIFT_UNAVAILABLE;
 @property (nonatomic, copy) IBInspectable NSString * _Nonnull cellType;
+- (void)traitCollectionDidChange:(UITraitCollection * _Nullable)previousTraitCollection;
 - (nonnull instancetype)initWithFrame:(CGRect)frame SWIFT_UNAVAILABLE;
 @end
 
