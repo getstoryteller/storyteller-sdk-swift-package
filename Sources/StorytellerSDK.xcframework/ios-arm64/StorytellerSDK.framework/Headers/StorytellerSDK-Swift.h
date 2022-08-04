@@ -294,7 +294,6 @@ SWIFT_CLASS("_TtC14StorytellerSDK18StorytellerRowView")
 
 
 
-
 #if __has_attribute(external_source_symbol)
 # pragma clang attribute pop
 #endif
