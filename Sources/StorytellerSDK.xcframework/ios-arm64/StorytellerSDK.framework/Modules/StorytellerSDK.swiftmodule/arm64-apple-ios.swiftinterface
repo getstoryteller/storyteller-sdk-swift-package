@@ -169,48 +169,6 @@ public struct UserActivityData {
     get
   }
 }
-public enum StorytellerError : Foundation.LocalizedError {
-  case invalidAPIKeyError(Swift.Error)
-  case networkError(Swift.Error)
-  case networkTimeoutError(Swift.Error)
-  case jsonParseError
-  case contentNotFound
-  public var cause: Swift.Error? {
-    get
-  }
-  public var errorDescription: Swift.String? {
-    get
-  }
-}
-public enum StorytellerListViewCellType : Swift.String, Swift.Codable, Swift.CaseIterable {
-  case square
-  case round
-  public init?(rawValue: Swift.String)
-  public typealias AllCases = [StorytellerSDK.StorytellerListViewCellType]
-  public typealias RawValue = Swift.String
-  public static var allCases: [StorytellerSDK.StorytellerListViewCellType] {
-    get
-  }
-  public var rawValue: Swift.String {
-    get
-  }
-}
-public struct StoryCategory {
-  public var id: Swift.String
-  public var name: Swift.String
-  public var urlName: Swift.String
-  public var externalId: Swift.String
-  public var isCurrentlyActive: Swift.Bool
-}
-extension StoryCategory : Swift.Codable, Swift.Hashable {
-  public func hash(into hasher: inout Swift.Hasher)
-  public static func == (a: StorytellerSDK.StoryCategory, b: StorytellerSDK.StoryCategory) -> Swift.Bool
-  public func encode(to encoder: Swift.Encoder) throws
-  public var hashValue: Swift.Int {
-    get
-  }
-  public init(from decoder: Swift.Decoder) throws
-}
 public struct ClientAd : Swift.Codable {
   public let id: Swift.String
   public let advertiserName: Swift.String
@@ -261,6 +219,48 @@ public struct ClientTrackingPixel : Swift.Codable {
   public func encode(to encoder: Swift.Encoder) throws
   public init(from decoder: Swift.Decoder) throws
 }
+public enum StorytellerError : Foundation.LocalizedError {
+  case invalidAPIKeyError(Swift.Error)
+  case networkError(Swift.Error)
+  case networkTimeoutError(Swift.Error)
+  case jsonParseError
+  case contentNotFound
+  public var cause: Swift.Error? {
+    get
+  }
+  public var errorDescription: Swift.String? {
+    get
+  }
+}
+public enum StorytellerListViewCellType : Swift.String, Swift.Codable, Swift.CaseIterable {
+  case square
+  case round
+  public init?(rawValue: Swift.String)
+  public typealias AllCases = [StorytellerSDK.StorytellerListViewCellType]
+  public typealias RawValue = Swift.String
+  public static var allCases: [StorytellerSDK.StorytellerListViewCellType] {
+    get
+  }
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public struct StoryCategory {
+  public var id: Swift.String
+  public var name: Swift.String
+  public var urlName: Swift.String
+  public var externalId: Swift.String
+  public var isCurrentlyActive: Swift.Bool
+}
+extension StoryCategory : Swift.Codable, Swift.Hashable {
+  public func hash(into hasher: inout Swift.Hasher)
+  public static func == (a: StorytellerSDK.StoryCategory, b: StorytellerSDK.StoryCategory) -> Swift.Bool
+  public func encode(to encoder: Swift.Encoder) throws
+  public var hashValue: Swift.Int {
+    get
+  }
+  public init(from decoder: Swift.Decoder) throws
+}
 public enum OpenStorytellerViewActionHandler {
   case willShow
   case failed(Swift.Error)
@@ -279,7 +279,7 @@ public typealias ImageCompletion = (UIKit.UIImage?) -> Swift.Void
   public static var isInitialized: Swift.Bool {
     get
   }
-  public static var isPresentingStory: Swift.Bool {
+  public static var isPlayerVisible: Swift.Bool {
     get
   }
   public static var customInstanceHost: Swift.String?
@@ -296,8 +296,7 @@ public typealias ImageCompletion = (UIKit.UIImage?) -> Swift.Void
     get
     set
   }
-  public static func dismissClipsView(animated: Swift.Bool)
-  public static func dismissStoryView(animated: Swift.Bool, dismissReason: Swift.String? = nil, onComplete: (() -> Swift.Void)? = nil)
+  public static func dismissPlayer(animated: Swift.Bool, dismissReason: Swift.String? = nil, onComplete: (() -> Swift.Void)? = nil)
   public static func isStorytellerDeeplink(url: Foundation.URL) -> Swift.Bool
   @discardableResult
   public static func openDeeplink(url: Foundation.URL, onError: ((Swift.Error) -> Swift.Void)? = nil) -> Swift.Bool
@@ -311,12 +310,12 @@ public typealias ImageCompletion = (UIKit.UIImage?) -> Swift.Void
 }
 public protocol StorytellerDelegate {
   func onUserActivityOccurred(type: StorytellerSDK.UserActivity.EventType, data: StorytellerSDK.UserActivityData)
-  func getAdsForList(stories: [StorytellerSDK.ClientStory], onComplete: @escaping ([StorytellerSDK.ClientAd?]) -> Swift.Void, onError: @escaping (Swift.Error) -> Swift.Void)
+  func getAdsForList(stories: [StorytellerSDK.ClientStory], onComplete: @escaping ([Swift.String : StorytellerSDK.ClientAd]) -> Swift.Void, onError: @escaping (Swift.Error) -> Swift.Void)
   func configureWebView(configuration: inout WebKit.WKWebViewConfiguration)
   func userNavigatedToApp(url: Swift.String)
 }
 extension StorytellerDelegate {
-  public func getAdsForList(stories: [StorytellerSDK.ClientStory], onComplete: @escaping ([StorytellerSDK.ClientAd?]) -> Swift.Void, onError: @escaping (Swift.Error) -> Swift.Void)
+  public func getAdsForList(stories: [StorytellerSDK.ClientStory], onComplete: @escaping ([Swift.String : StorytellerSDK.ClientAd]) -> Swift.Void, onError: @escaping (Swift.Error) -> Swift.Void)
 }
 extension StorytellerDelegate {
   public func onUserActivityOccurred(type: StorytellerSDK.UserActivity.EventType, data: StorytellerSDK.UserActivityData)
@@ -837,12 +836,12 @@ public struct UITheme : Swift.Codable {
 extension StorytellerSDK.UserActivity.EventType : Swift.Equatable {}
 extension StorytellerSDK.UserActivity.EventType : Swift.Hashable {}
 extension StorytellerSDK.UserActivity.EventType : Swift.RawRepresentable {}
-extension StorytellerSDK.StorytellerListViewCellType : Swift.Equatable {}
-extension StorytellerSDK.StorytellerListViewCellType : Swift.Hashable {}
-extension StorytellerSDK.StorytellerListViewCellType : Swift.RawRepresentable {}
 extension StorytellerSDK.ClientAdActionKind : Swift.Equatable {}
 extension StorytellerSDK.ClientAdActionKind : Swift.Hashable {}
 extension StorytellerSDK.ClientAdActionKind : Swift.RawRepresentable {}
+extension StorytellerSDK.StorytellerListViewCellType : Swift.Equatable {}
+extension StorytellerSDK.StorytellerListViewCellType : Swift.Hashable {}
+extension StorytellerSDK.StorytellerListViewCellType : Swift.RawRepresentable {}
 extension StorytellerSDK.StorytellerListViewError : Swift.Equatable {}
 extension StorytellerSDK.StorytellerListViewError : Swift.Hashable {}
 extension StorytellerSDK.StorytellerListViewStyle : Swift.Equatable {}
