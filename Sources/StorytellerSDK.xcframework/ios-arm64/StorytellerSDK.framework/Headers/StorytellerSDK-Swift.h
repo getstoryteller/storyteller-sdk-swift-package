@@ -239,6 +239,8 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NSBundle * _
 
 SWIFT_CLASS("_TtC14StorytellerSDK24StorytellerClipsGridView")
 @interface StorytellerClipsGridView : ClipsListView
+@property (nonatomic, readonly) CGSize intrinsicContentSize;
+- (void)layoutSubviews;
 @end
 
 
@@ -260,6 +262,8 @@ SWIFT_CLASS("_TtC14StorytellerSDK19StorytellerListView")
 
 SWIFT_CLASS("_TtC14StorytellerSDK19StorytellerGridView")
 @interface StorytellerGridView : StorytellerListView
+@property (nonatomic, readonly) CGSize intrinsicContentSize;
+- (void)layoutSubviews;
 @end
 
 

@@ -135,16 +135,17 @@ public struct UserActivityData {
   public let pageIndex: Swift.Int?
   public let pageType: Swift.String?
   public let storyPlaybackMode: Swift.String?
+  public let contentLength: Swift.Int?
   public let pageHasAction: Swift.Bool?
   public let pageActionText: Swift.String?
   public let pageActionUrl: Swift.String?
   public let openedReason: Swift.String?
+  public let shareMethod: Swift.String?
   public let dismissedReason: Swift.String?
   public let durationViewed: Swift.Float?
   public let pagesViewedCount: Swift.Int?
   public let advertiserName: Swift.String?
   public let adId: Swift.String?
-  public let shareMethod: Swift.String?
   public let adView: UIKit.UIView?
   public let isInitialBuffering: Swift.Bool?
   public let timeSinceBufferingBegan: Foundation.TimeInterval?
@@ -415,8 +416,12 @@ extension StorytellerHomeDelegate {
 @objc @_hasMissingDesignatedInitializers public class StorytellerClipsGridView : StorytellerSDK.ClipsListView {
   public init()
   weak public var gridDelegate: StorytellerSDK.StorytellerGridViewDelegate?
+  @objc override dynamic public var intrinsicContentSize: CoreGraphics.CGSize {
+    @objc get
+  }
   public func reloadData(cell: UIKit.UITableViewCell, tableView: UIKit.UITableView)
   override public func prepareForReuse()
+  @objc override dynamic public func layoutSubviews()
   @objc deinit
 }
 @objc @_hasMissingDesignatedInitializers public class StorytellerClipsRowView : StorytellerSDK.ClipsListView {
@@ -426,10 +431,10 @@ extension StorytellerHomeDelegate {
 @objc @_hasMissingDesignatedInitializers public class StorytellerGridView : StorytellerSDK.StorytellerListView {
   public init()
   weak public var gridDelegate: StorytellerSDK.StorytellerGridViewDelegate?
-  override public var theme: StorytellerSDK.UITheme? {
-    get
-    set
+  @objc override dynamic public var intrinsicContentSize: CoreGraphics.CGSize {
+    @objc get
   }
+  @objc override dynamic public func layoutSubviews()
   public func reloadData(cell: UIKit.UITableViewCell, tableView: UIKit.UITableView)
   override public func prepareForReuse()
   @objc deinit
