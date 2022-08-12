@@ -17,7 +17,6 @@ import os
 public enum PublicAsset {
   public static let iconQuizAnswerCorrect: StorytellerSDK.PublicImages
   public static let iconQuizAnswerIncorrect: StorytellerSDK.PublicImages
-  public static let backgroundTextPlaceholderRound: StorytellerSDK.PublicImages
   public static let backgroundTextPlaceholderSquareDark: StorytellerSDK.PublicImages
   public static let backgroundTextPlaceholderSquareLight: StorytellerSDK.PublicImages
   public static let backgroundTextPlaceholderSquare: StorytellerSDK.PublicImages
@@ -39,6 +38,10 @@ public enum PublicAsset {
   public static let iconInstructionSwipeBlack: StorytellerSDK.PublicImages
   public static let iconInstructionSwipeWhite: StorytellerSDK.PublicImages
   public static let iconShare: StorytellerSDK.PublicImages
+  public static let mainPlaceholderRoundDark: StorytellerSDK.PublicImages
+  public static let mainPlaceholderRoundLight: StorytellerSDK.PublicImages
+  public static let textPlaceholderRoundDark: StorytellerSDK.PublicImages
+  public static let textPlaceholderRoundLight: StorytellerSDK.PublicImages
   public static let placeholderGradientVerticalDark: StorytellerSDK.PublicImages
   public static let placeholderGradientVerticalLight: StorytellerSDK.PublicImages
   public static let placeholderGradientVertical: StorytellerSDK.PublicImages
