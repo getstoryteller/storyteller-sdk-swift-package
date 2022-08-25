@@ -533,7 +533,8 @@ public enum Alignment : Swift.String, Swift.Codable {
     get
   }
 }
-open class FontProvider : Swift.Codable {
+open class FontProvider : Swift.Codable, Swift.Equatable {
+  public static func == (lhs: StorytellerSDK.FontProvider, rhs: StorytellerSDK.FontProvider) -> Swift.Bool
   open func font(weight: StorytellerSDK.StorytellerFontWeight, size: CoreGraphics.CGFloat) -> UIKit.UIFont?
   public init()
   @objc deinit
@@ -577,11 +578,12 @@ public struct InstructionIcons : Swift.Codable {
 extension InstructionIcons : Swift.Equatable {
   public static func == (lhs: StorytellerSDK.InstructionIcons, rhs: StorytellerSDK.InstructionIcons) -> Swift.Bool
 }
-public struct PlayerIcons : Swift.Codable {
+public struct PlayerIcons : Swift.Codable, Swift.Equatable {
   public var share: UIKit.UIImage?
   public var refresh: UIKit.UIImage?
   public init(from decoder: Swift.Decoder) throws
   public func encode(to encoder: Swift.Encoder) throws
+  public static func == (a: StorytellerSDK.PlayerIcons, b: StorytellerSDK.PlayerIcons) -> Swift.Bool
 }
 public enum TextCasing : Swift.String, Swift.Codable {
   case `default`
@@ -657,52 +659,60 @@ extension Theme.Colors.Text : Swift.Codable {
   public init(from decoder: Swift.Decoder) throws
   public func encode(to encoder: Swift.Encoder) throws
 }
-public struct Theme {
-  public struct Colors {
+public struct Theme : Swift.Equatable {
+  public struct Colors : Swift.Equatable {
     public var primary: UIKit.UIColor
     public var success: UIKit.UIColor
     public var alert: UIKit.UIColor
     public var white: StorytellerSDK.Theme.Colors.Text
     public var black: StorytellerSDK.Theme.Colors.Text
-    public struct Text {
+    public struct Text : Swift.Equatable {
       public var primary: UIKit.UIColor
       public var secondary: UIKit.UIColor?
       public var tertiary: UIKit.UIColor?
+      public static func == (a: StorytellerSDK.Theme.Colors.Text, b: StorytellerSDK.Theme.Colors.Text) -> Swift.Bool
     }
+    public static func == (a: StorytellerSDK.Theme.Colors, b: StorytellerSDK.Theme.Colors) -> Swift.Bool
   }
-  public struct Primitives : Swift.Codable {
+  public struct Primitives : Swift.Codable, Swift.Equatable {
     public var cornerRadius: CoreGraphics.CGFloat
+    public static func == (a: StorytellerSDK.Theme.Primitives, b: StorytellerSDK.Theme.Primitives) -> Swift.Bool
     public func encode(to encoder: Swift.Encoder) throws
     public init(from decoder: Swift.Decoder) throws
   }
-  public struct LiveChip {
+  public struct LiveChip : Swift.Equatable {
     public var readImage: UIKit.UIImage?
     public var unreadImage: UIKit.UIImage?
     public var readBackgroundColor: UIKit.UIColor?
     public var unreadBackgroundColor: UIKit.UIColor?
     public var textColor: UIKit.UIColor?
+    public static func == (a: StorytellerSDK.Theme.LiveChip, b: StorytellerSDK.Theme.LiveChip) -> Swift.Bool
   }
-  public struct Lists {
-    public struct Row : Swift.Codable {
+  public struct Lists : Swift.Equatable {
+    public struct Row : Swift.Codable, Swift.Equatable {
       public var tileSpacing: CoreGraphics.CGFloat
       public var startInset: CoreGraphics.CGFloat
       public var endInset: CoreGraphics.CGFloat
+      public static func == (a: StorytellerSDK.Theme.Lists.Row, b: StorytellerSDK.Theme.Lists.Row) -> Swift.Bool
       public func encode(to encoder: Swift.Encoder) throws
       public init(from decoder: Swift.Decoder) throws
     }
-    public struct Grid : Swift.Codable {
+    public struct Grid : Swift.Codable, Swift.Equatable {
       public var tileSpacing: CoreGraphics.CGFloat
       public var columns: Swift.Int
+      public static func == (a: StorytellerSDK.Theme.Lists.Grid, b: StorytellerSDK.Theme.Lists.Grid) -> Swift.Bool
       public func encode(to encoder: Swift.Encoder) throws
       public init(from decoder: Swift.Decoder) throws
     }
-    public struct Home : Swift.Codable {
+    public struct Home : Swift.Codable, Swift.Equatable {
       public var startInset: CoreGraphics.CGFloat
       public var endInset: CoreGraphics.CGFloat
-      public struct Heading {
+      public struct Heading : Swift.Equatable {
         public var textColor: UIKit.UIColor?
         public var font: StorytellerSDK.FontProvider?
+        public static func == (a: StorytellerSDK.Theme.Lists.Home.Heading, b: StorytellerSDK.Theme.Lists.Home.Heading) -> Swift.Bool
       }
+      public static func == (a: StorytellerSDK.Theme.Lists.Home, b: StorytellerSDK.Theme.Lists.Home) -> Swift.Bool
       public func encode(to encoder: Swift.Encoder) throws
       public init(from decoder: Swift.Decoder) throws
     }
@@ -710,53 +720,62 @@ public struct Theme {
     public var row: StorytellerSDK.Theme.Lists.Row
     public var grid: StorytellerSDK.Theme.Lists.Grid
     public var home: StorytellerSDK.Theme.Lists.Home
+    public static func == (a: StorytellerSDK.Theme.Lists, b: StorytellerSDK.Theme.Lists) -> Swift.Bool
   }
-  public struct StoryTiles : Swift.Codable {
-    public struct Chip : Swift.Codable {
+  public struct StoryTiles : Swift.Codable, Swift.Equatable {
+    public struct Chip : Swift.Codable, Swift.Equatable {
       public var textSize: CoreGraphics.CGFloat
+      public static func == (a: StorytellerSDK.Theme.StoryTiles.Chip, b: StorytellerSDK.Theme.StoryTiles.Chip) -> Swift.Bool
       public func encode(to encoder: Swift.Encoder) throws
       public init(from decoder: Swift.Decoder) throws
     }
-    public struct Title : Swift.Codable {
+    public struct Title : Swift.Codable, Swift.Equatable {
       public var show: Swift.Bool
       public var textSize: CoreGraphics.CGFloat
       public var lineHeight: CoreGraphics.CGFloat
       public var alignment: StorytellerSDK.Alignment
+      public static func == (a: StorytellerSDK.Theme.StoryTiles.Title, b: StorytellerSDK.Theme.StoryTiles.Title) -> Swift.Bool
       public func encode(to encoder: Swift.Encoder) throws
       public init(from decoder: Swift.Decoder) throws
     }
-    public struct CircularTile {
+    public struct CircularTile : Swift.Equatable {
       public var title: StorytellerSDK.Theme.StoryTiles.CircularTile.Title
       public var unreadIndicatorColor: UIKit.UIColor?
       public var readIndicatorColor: UIKit.UIColor
       public var unreadBorderWidth: CoreGraphics.CGFloat
       public var readBorderWidth: CoreGraphics.CGFloat
       public var liveChip: StorytellerSDK.Theme.LiveChip
-      public struct Title {
+      public struct Title : Swift.Equatable {
         public var readTextColor: UIKit.UIColor?
         public var unreadTextColor: UIKit.UIColor?
+        public static func == (a: StorytellerSDK.Theme.StoryTiles.CircularTile.Title, b: StorytellerSDK.Theme.StoryTiles.CircularTile.Title) -> Swift.Bool
       }
+      public static func == (a: StorytellerSDK.Theme.StoryTiles.CircularTile, b: StorytellerSDK.Theme.StoryTiles.CircularTile) -> Swift.Bool
     }
-    public struct RectangularTile : Swift.Codable {
+    public struct RectangularTile : Swift.Codable, Swift.Equatable {
       public var padding: CoreGraphics.CGFloat
       public var title: StorytellerSDK.Theme.StoryTiles.RectangularTile.Title
       public var chip: StorytellerSDK.Theme.StoryTiles.RectangularTile.Chip
       public var unreadIndicator: StorytellerSDK.Theme.StoryTiles.RectangularTile.UnreadIndicator
       public var liveChip: StorytellerSDK.Theme.LiveChip
-      public struct Title {
+      public struct Title : Swift.Equatable {
         public var textColor: UIKit.UIColor?
+        public static func == (a: StorytellerSDK.Theme.StoryTiles.RectangularTile.Title, b: StorytellerSDK.Theme.StoryTiles.RectangularTile.Title) -> Swift.Bool
       }
-      public struct Chip : Swift.Codable {
+      public struct Chip : Swift.Codable, Swift.Equatable {
         public var alignment: StorytellerSDK.Alignment
+        public static func == (a: StorytellerSDK.Theme.StoryTiles.RectangularTile.Chip, b: StorytellerSDK.Theme.StoryTiles.RectangularTile.Chip) -> Swift.Bool
         public func encode(to encoder: Swift.Encoder) throws
         public init(from decoder: Swift.Decoder) throws
       }
-      public struct UnreadIndicator {
+      public struct UnreadIndicator : Swift.Equatable {
         public var image: UIKit.UIImage?
         public var backgroundColor: UIKit.UIColor?
         public var textColor: UIKit.UIColor?
         public var textSize: CoreGraphics.CGFloat
+        public static func == (a: StorytellerSDK.Theme.StoryTiles.RectangularTile.UnreadIndicator, b: StorytellerSDK.Theme.StoryTiles.RectangularTile.UnreadIndicator) -> Swift.Bool
       }
+      public static func == (a: StorytellerSDK.Theme.StoryTiles.RectangularTile, b: StorytellerSDK.Theme.StoryTiles.RectangularTile) -> Swift.Bool
       public func encode(to encoder: Swift.Encoder) throws
       public init(from decoder: Swift.Decoder) throws
     }
@@ -764,51 +783,59 @@ public struct Theme {
     public var title: StorytellerSDK.Theme.StoryTiles.Title
     public var circularTile: StorytellerSDK.Theme.StoryTiles.CircularTile
     public var rectangularTile: StorytellerSDK.Theme.StoryTiles.RectangularTile
+    public static func == (a: StorytellerSDK.Theme.StoryTiles, b: StorytellerSDK.Theme.StoryTiles) -> Swift.Bool
     public func encode(to encoder: Swift.Encoder) throws
     public init(from decoder: Swift.Decoder) throws
   }
-  public struct EngagementUnits : Swift.Codable {
+  public struct EngagementUnits : Swift.Codable, Swift.Equatable {
     public var poll: StorytellerSDK.Theme.EngagementUnits.Poll
     public var triviaQuiz: StorytellerSDK.Theme.EngagementUnits.TriviaQuiz
-    public struct Poll {
+    public struct Poll : Swift.Equatable {
       public var answerTextColor: UIKit.UIColor?
       public var percentBarColor: UIKit.UIColor
       public var selectedAnswerBorderColor: UIKit.UIColor?
       public var answeredMessageTextColor: UIKit.UIColor?
       public var selectedAnswerBorderImage: UIKit.UIImage?
       public var showVoteCount: Swift.Bool
+      public static func == (a: StorytellerSDK.Theme.EngagementUnits.Poll, b: StorytellerSDK.Theme.EngagementUnits.Poll) -> Swift.Bool
     }
-    public struct TriviaQuiz {
+    public struct TriviaQuiz : Swift.Equatable {
       public var correctColor: UIKit.UIColor?
       public var incorrectColor: UIKit.UIColor?
+      public static func == (a: StorytellerSDK.Theme.EngagementUnits.TriviaQuiz, b: StorytellerSDK.Theme.EngagementUnits.TriviaQuiz) -> Swift.Bool
     }
+    public static func == (a: StorytellerSDK.Theme.EngagementUnits, b: StorytellerSDK.Theme.EngagementUnits) -> Swift.Bool
     public func encode(to encoder: Swift.Encoder) throws
     public init(from decoder: Swift.Decoder) throws
   }
-  public struct Player {
+  public struct Player : Swift.Equatable {
     public var icons: StorytellerSDK.PlayerIcons
     public var liveChipImage: UIKit.UIImage?
     public var showStoryIcon: Swift.Bool
     public var showTimestamp: Swift.Bool
     public var showShareButton: Swift.Bool
+    public static func == (a: StorytellerSDK.Theme.Player, b: StorytellerSDK.Theme.Player) -> Swift.Bool
   }
-  public struct Buttons {
+  public struct Buttons : Swift.Equatable {
     public var backgroundColor: UIKit.UIColor?
     public var textColor: UIKit.UIColor?
     public var textCase: StorytellerSDK.TextCasing
     public var cornerRadius: CoreGraphics.CGFloat?
+    public static func == (a: StorytellerSDK.Theme.Buttons, b: StorytellerSDK.Theme.Buttons) -> Swift.Bool
   }
-  public struct Instructions {
+  public struct Instructions : Swift.Equatable {
     public var show: Swift.Bool
     public var headingColor: UIKit.UIColor?
     public var subHeadingColor: UIKit.UIColor?
     public var backgroundColor: UIKit.UIColor?
     public var icons: StorytellerSDK.InstructionIcons?
     public var button: StorytellerSDK.Theme.Instructions.Button
-    public struct Button {
+    public struct Button : Swift.Equatable {
       public var textColor: UIKit.UIColor?
       public var backgroundColor: UIKit.UIColor?
+      public static func == (a: StorytellerSDK.Theme.Instructions.Button, b: StorytellerSDK.Theme.Instructions.Button) -> Swift.Bool
     }
+    public static func == (a: StorytellerSDK.Theme.Instructions, b: StorytellerSDK.Theme.Instructions) -> Swift.Bool
   }
   public var colors: StorytellerSDK.Theme.Colors
   public var customFont: StorytellerSDK.FontProvider
@@ -819,6 +846,7 @@ public struct Theme {
   public var buttons: StorytellerSDK.Theme.Buttons
   public var instructions: StorytellerSDK.Theme.Instructions
   public var engagementUnits: StorytellerSDK.Theme.EngagementUnits
+  public static func == (a: StorytellerSDK.Theme, b: StorytellerSDK.Theme) -> Swift.Bool
 }
 public enum UIStyle : Swift.String, Swift.Codable, Swift.CaseIterable {
   case light
@@ -834,7 +862,8 @@ public enum UIStyle : Swift.String, Swift.Codable, Swift.CaseIterable {
     get
   }
 }
-public struct UITheme : Swift.Codable {
+public struct UITheme : Swift.Codable, Swift.Equatable {
+  public static func == (lhs: StorytellerSDK.UITheme, rhs: StorytellerSDK.UITheme) -> Swift.Bool
   public init()
   public var dark: StorytellerSDK.Theme
   public var light: StorytellerSDK.Theme
