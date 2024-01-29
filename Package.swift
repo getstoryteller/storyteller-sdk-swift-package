@@ -6,7 +6,8 @@ import PackageDescription
 let package = Package(
     name: "storyteller-sdk-package",
     platforms: [
-      .iOS(.v11)
+      .iOS(.v13),
+      .tvOS(.v14)
     ],
     products: [
         .library(
@@ -15,7 +16,7 @@ let package = Package(
     ],
     targets: [
       .binaryTarget(name: "StorytellerSDK",
-                    url: "https://storyteller.azureedge.net/sdk-ios/xcframeworks/9.8.1/StorytellerSDK.zip",
-                    checksum: "39cf056ebc05aae1810f99af41046b6d7236b85b289f4cb184c0b554624be45b")
+                    url: "https://storyteller.azureedge.net/sdk-ios/xcframeworks/9.9.0/StorytellerSDK.zip",
+                    checksum: "88799ab4b1b28e1dd7fdf4eeb5117dc97cbc382e8a9def4ee097c2d83eff19a4")
     ]
 )
