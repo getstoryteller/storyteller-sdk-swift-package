@@ -7,7 +7,7 @@ let package = Package(
     name: "storyteller-sdk-package",
     platforms: [
       .iOS(.v11),
-      .tvOS(.v14)
+      .tvOS(.v15)
     ],
     products: [
         .library(
