@@ -16,7 +16,7 @@ let package = Package(
     ],
     targets: [
       .binaryTarget(name: "StorytellerSDK",
-                    url: "https://storyteller.azureedge.net/sdk-ios/xcframeworks/10.5.1/StorytellerSDK.zip",
-                    checksum: "2aaec2982e729c3c91f9f6d0dd6b90a8402adb7cffa8adfa819797a19cb81191")
+                    url: "https://storyteller.azureedge.net/sdk-ios/xcframeworks/10.5.2/StorytellerSDK.zip",
+                    checksum: "d17af339c96244301c6ce4806c8c20cc11f3c90ed58aae9af855dc095a4f1c04")
     ]
 )
