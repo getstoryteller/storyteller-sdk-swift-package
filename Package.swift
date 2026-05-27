@@ -17,7 +17,7 @@ let package = Package(
           ]),
     ],
     dependencies: [
-      .package(url: "https://github.com/airbnb/lottie-spm.git", .upToNextMajor(from: "4.5.2")),
+      .package(url: "https://github.com/getstoryteller/storyteller-lottie-module-swift", exact: "4.6.0"),
     ],
     targets: [
       .binaryTarget(name: "StorytellerSDK",
@@ -26,7 +26,7 @@ let package = Package(
       .target(
         name: "StorytellerSDKDependencies",
         dependencies: [
-          .product(name: "Lottie", package: "lottie-spm")
+          .product(name: "StorytellerLottie", package: "storyteller-lottie-module-swift")
         ])
     ]
 )
